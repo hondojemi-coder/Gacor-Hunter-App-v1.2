@@ -1,775 +1,1768 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>GACOR HUNTER PRO V6.0 (Perfected)</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700;900&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+  <title>NEXUS V13 — Precision Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #03050a;
+      --card: rgba(13, 17, 31, 0.72);
+      --border: rgba(255,255,255,0.08);
+      --text: #f4f7fb;
+      --muted: #8b9bb4;
+      --cyan: #00e5ff;
+      --purple: #b537f2;
+      --green: #00ff9d;
+      --yellow: #ffb703;
+      --red: #ff2a5f;
+      --orange: #ff7a18;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+    button { user-select: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+    body {
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 12% 35%, rgba(181,55,242,0.1), transparent 30%),
+        radial-gradient(circle at 88% 15%, rgba(0,229,255,0.08), transparent 28%);
+      color: var(--text); min-height: 100vh; display: flex; justify-content: center; overflow-x: hidden;
+    }
+    .app { width: 100%; max-width: 480px; min-height: 100vh; position: relative; z-index: 1; padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
 
-        :root { 
-            --bg-base: #0B0F19; --bg-card: #151A27; --glass-border: rgba(255, 255, 255, 0.05);
-            --text-main: #ffffff; --text-muted: #94a3b8;
-            --neon-cyan: #00f0ff; --neon-purple: #8B5CF6; 
-            --buy: #10b981; --wait: #f59e0b; --skip: #f43f5e; 
-        }
+    /* ===== SPLASH (roket + logo menyala) ===== */
+    #splash {
+      position: fixed; inset: 0; z-index: 9999; background: #03050a;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.55s ease, visibility 0.55s; overflow: hidden;
+    }
+    #splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    .splash-rocket {
+      font-size: 36px; margin-bottom: 18px;
+      animation: rocketLaunch 1.6s cubic-bezier(0.2,0.8,0.2,1) forwards;
+      filter: drop-shadow(0 0 12px rgba(0,229,255,0.55));
+    }
+    @keyframes rocketLaunch {
+      0%   { transform: translateY(40px) scale(0.6); opacity: 0; }
+      35%  { transform: translateY(0) scale(1); opacity: 1; }
+      70%  { transform: translateY(-8px) scale(1.05); }
+      100% { transform: translateY(-18px) scale(1); opacity: 0.95; }
+    }
+    .splash-logo {
+      font-size: 46px; font-weight: 800; letter-spacing: 8px; position: relative; color: transparent;
+      background: linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.12));
+      -webkit-background-clip: text; background-clip: text;
+    }
+    .splash-logo::after {
+      content: "NEXUS"; position: absolute; left: 0; top: 0; width: 0; overflow: hidden; white-space: nowrap;
+      background: linear-gradient(90deg, var(--cyan), #7c5cff, var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      filter: drop-shadow(0 0 14px rgba(0,229,255,0.55));
+      animation: nexusShine 1.5s 0.25s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes nexusShine { to { width: 100%; } }
+    .splash-sub { margin-top: 10px; font-size: 11px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; opacity: 0; animation: fadeUp 0.5s 1.1s forwards; }
+    .splash-bar { width: 140px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 4px; margin-top: 28px; overflow: hidden; }
+    .splash-bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--purple)); animation: barFill 1.4s 0.35s forwards; box-shadow: 0 0 12px rgba(0,229,255,0.5); }
+    @keyframes barFill { to { width: 100%; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
 
-        * { box-sizing: border-box; scroll-behavior: smooth; margin: 0; padding: 0; user-select: none; font-family: 'Inter', sans-serif;}
-        body { background: var(--bg-base); color: var(--text-main); display: flex; justify-content: center; overflow-x: hidden; }
-        
-        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; pointer-events: none; opacity: 0.6; }
-        .orb-1 { top: -10%; left: -20%; width: 300px; height: 300px; background: rgba(139, 92, 246, 0.2); }
+    /* ===== AUTH ===== */
+    #authView { display: none; padding: 40px 18px 30px; animation: fadeUp 0.4s ease; }
+    #authView.show { display: block; }
+    .auth-brand { text-align: center; margin-bottom: 28px; }
+    .auth-brand h1 { font-size: 28px; font-weight: 800; letter-spacing: 4px; background: linear-gradient(120deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .auth-brand p { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .auth-card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 22px; }
+    .auth-tabs { display: flex; background: rgba(0,0,0,0.35); border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+    .auth-tab { flex: 1; text-align: center; padding: 11px; border-radius: 10px; font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .auth-tab.active { background: rgba(0,229,255,0.12); color: var(--cyan); border: 1px solid rgba(0,229,255,0.25); }
+    .field { margin-bottom: 13px; }
+    .field label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .field input { width: 100%; padding: 14px 15px; border-radius: 13px; border: 1px solid rgba(255,255,255,0.07); background: rgba(0,0,0,0.35); color: #fff; font-size: 14px; outline: none; font-family: 'JetBrains Mono', monospace; }
+    .field input:focus { border-color: rgba(0,229,255,0.45); }
+    .auth-msg { display: none; font-size: 12px; padding: 10px 13px; border-radius: 11px; margin-bottom: 12px; line-height: 1.4; }
+    .auth-msg.err { display: block; background: rgba(255,42,95,0.12); border: 1px solid rgba(255,42,95,0.3); color: #ff8aa8; }
+    .auth-msg.ok { display: block; background: rgba(0,255,157,0.1); border: 1px solid rgba(0,255,157,0.28); color: #7dffc4; }
+    .btn-main { width: 100%; padding: 14px; border: none; border-radius: 13px; font-weight: 800; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #001018; background: linear-gradient(135deg, var(--cyan), #6d5efc); }
+    .btn-main:disabled { opacity: 0.55; }
+    .disclaimer { font-size: 10px; color: #64748b; text-align: center; line-height: 1.45; margin-top: 16px; }
 
-        .app-wrapper { width: 100%; max-width: 480px; min-height: 100vh; position: relative; z-index: 1; padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
-        
-        .view-section { display: none; padding: 15px; animation: slideUpFade 0.4s ease-out; }
-        .view-active { display: block; }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    /* ===== SHELL ===== */
+    #appView { display: none; }
+    #appView.show { display: block; }
+    .view { display: none; padding: 16px 14px 10px; animation: fadeUp 0.3s ease; }
+    .view.active { display: block; }
+    .glass { background: var(--card); backdrop-filter: blur(18px); border: 1px solid var(--border); border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+    .section-label { font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: 1.1px; text-transform: uppercase; margin-bottom: 11px; display: flex; align-items: center; gap: 7px; }
+    .grad { background: linear-gradient(90deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .avatar { width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; border: 1px solid rgba(181,55,242,0.4); background: linear-gradient(135deg, rgba(181,55,242,0.25), transparent); }
+    .quota-pill { font-size: 11px; font-weight: 700; color: var(--cyan); background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.25); padding: 6px 11px; border-radius: 20px; }
 
-        .glass-card { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--glass-border); padding: 18px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .section-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+    .search-box { display: flex; gap: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,229,255,0.2); border-radius: 14px; padding: 5px; margin-bottom: 12px; }
+    .search-box input { flex: 1; background: transparent; border: none; color: #fff; padding: 10px 12px; outline: none; font-family: 'JetBrains Mono', monospace; font-size: 14px; text-transform: uppercase; }
+    .search-box button { width: 42px; height: 42px; border: none; border-radius: 11px; background: var(--cyan); color: #001018; font-weight: 800; }
 
-        /* UI LOGIN & REGISTER */
-        .login-box { display: flex; flex-direction: column; gap: 10px; margin-top: 50px; }
-        .auth-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-        .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: 800; font-size: 12px; transition: 0.3s; }
-        .input-pro { width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.4); color: white; font-size: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); outline: none; transition: 0.3s; margin-bottom: 10px;}
-        .input-pro:disabled { opacity: 0.5; }
-        .btn-pro { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; color: #fff; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); text-transform: uppercase; transition: opacity 0.3s;}
-        .btn-pro:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .avatar { width: 45px; height: 45px; border-radius: 14px; background: rgba(139, 92, 246, 0.2); border: 1px solid var(--neon-purple); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; }
-        .role-badge { font-size: 9px; background: var(--neon-cyan); color: #000; padding: 2px 6px; border-radius: 6px; font-weight: bold; margin-left: 6px; }
+    .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 12px; }
+    .metric { background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.04); border-radius: 13px; padding: 11px 13px; }
+    .metric span { display: block; font-size: 9px; color: var(--muted); font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; margin-bottom: 3px; }
+    .metric b { font-size: 16px; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
 
-        .ai-search-container { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 6px; display: flex; align-items: center; margin-bottom: 20px; }
-        .ai-search-input { flex: 1; background: transparent; border: none; color: white; font-size: 13px; outline: none; padding-left: 10px; }
-        .ai-search-btn { background: var(--neon-purple); border: none; color: #fff; width: 38px; height: 38px; border-radius: 10px; cursor: pointer; }
-        
-        .quick-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
-        .quick-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-        .quick-icon { width: 55px; height: 55px; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 22px; }
-        
-        .radar-card { background: rgba(20, 25, 40, 0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; margin-bottom: 10px;}
-        .bottom-nav-container { position: fixed; bottom: 0; left: 0; width: 100%; padding-bottom: env(safe-area-inset-bottom); display: flex; justify-content: center; z-index: 100; background: linear-gradient(to top, rgba(11,15,25,0.95) 40%, transparent); display: none; }
-        .bottom-nav { width: calc(100% - 30px); margin-bottom: 15px; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; display: flex; justify-content: space-around; padding: 10px 5px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; color: #64748b; cursor: pointer; width: 20%; }
-        .nav-item.active { color: var(--neon-cyan); }
-        .nav-icon { font-size: 22px; }
-        .upload-dropzone { border: 2px dashed rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 15px; text-align: center; background: rgba(255,255,255,0.02); cursor: pointer; margin-bottom: 15px; position: relative;}
+    .btn-ghost { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0,229,255,0.25); background: rgba(0,229,255,0.08); color: var(--cyan); font-weight: 800; font-size: 12px; letter-spacing: 0.7px; text-transform: uppercase; }
+    .btn-ghost:disabled { opacity: 0.5; }
+    .btn-ghost.yellow { border-color: rgba(255,183,3,0.35); color: var(--yellow); background: rgba(255,183,3,0.1); }
+    .btn-ghost.purple { border-color: rgba(181,55,242,0.35); color: var(--purple); background: rgba(181,55,242,0.1); }
+    .btn-ghost.red { border-color: rgba(255,42,95,0.35); color: var(--red); background: rgba(255,42,95,0.08); }
+    .btn-ghost.green { border-color: rgba(0,255,157,0.3); color: var(--green); background: rgba(0,255,157,0.08); }
+    .btn-sm { width: auto; padding: 8px 12px; font-size: 11px; }
 
-        /* SCORING BOX V5.5 */
-        .v5-box { background: rgba(23, 27, 44, 0.9); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 15px; }
-        .v5-title { font-size: 11px; font-weight: 800; color: var(--neon-cyan); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
-        .v5-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 12px; }
-        .v5-row:last-child { border-bottom: none; }
-        .v5-val { font-weight: 700; font-family: 'JetBrains Mono', monospace; text-align: right;}
-        
-        .box-entry { border: 1px solid var(--buy); background: rgba(16, 185, 129, 0.05); }
-        .box-trigger { border: 1px solid var(--wait); background: rgba(245, 158, 11, 0.05); }
-        .box-cutloss { border: 1px solid var(--skip); background: rgba(244, 63, 94, 0.05); }
+    /* ===== CHART ===== */
+    .chart-host { border-radius: 14px; overflow: hidden; background: #070b14; position: relative; }
+    #ihsgChart { height: 210px; }
+    #chartBox { height: 300px; }
+    .chart-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 10px; color: var(--muted); margin-top: 9px; }
+    .chart-legend i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 4px; }
+    .tf-row { display: flex; gap: 6px; margin-bottom: 9px; }
+    .tf-btn { flex: 1; padding: 7px 4px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.09); background: rgba(0,0,0,0.3); color: var(--muted); font-size: 10.5px; font-weight: 800; }
+    .tf-btn.active { border-color: rgba(0,229,255,0.4); color: var(--cyan); background: rgba(0,229,255,0.1); }
 
-        .score-progress-bg { background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; margin: 20px 0; overflow: hidden; }
-        .score-progress-bar { height: 100%; border-radius: 4px; transition: width 1s ease-in-out; }
-        .v5-score-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 11px; color: #cbd5e1;}
-        .v5-score-row:last-child { border-bottom: none; }
-        .v5-score-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #fff; }
+    /* ===== CARDS ===== */
+    .radar-card, .bandar-card { background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.06); border-radius: 15px; padding: 13px; margin-bottom: 9px; cursor: pointer; transition: 0.2s; }
+    .radar-card:active, .bandar-card:active { transform: scale(0.98); border-color: rgba(0,229,255,0.3); }
+    .radar-card.buy { border-left: 3px solid var(--green); }
+    .radar-card.wait { border-left: 3px solid var(--yellow); }
+    .radar-card.avoid { border-left: 3px solid rgba(255,42,95,0.5); opacity: 0.75; }
+    .bandar-card.buy { border-left: 3px solid var(--green); }
+    .bandar-card.wait { border-left: 3px solid var(--yellow); }
+    .bandar-card.avoid { border-left: 3px solid rgba(255,42,95,0.5); }
+    .radar-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+    .ticker { font-size: 15px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    .badge { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 7px; letter-spacing: 0.4px; }
+    .badge-S { background: rgba(255,122,24,0.18); color: var(--orange); border: 1px solid rgba(255,122,24,0.4); }
+    .badge-A { background: rgba(0,255,157,0.15); color: var(--green); border: 1px solid rgba(0,255,157,0.3); }
+    .badge-B { background: rgba(0,229,255,0.12); color: var(--cyan); border: 1px solid rgba(0,229,255,0.28); }
+    .badge-C { background: rgba(255,183,3,0.12); color: var(--yellow); border: 1px solid rgba(255,183,3,0.28); }
+    .badge-D { background: rgba(255,42,95,0.12); color: var(--red); border: 1px solid rgba(255,42,95,0.28); }
+    .setup-tag { display: inline-block; font-size: 10px; font-weight: 700; color: var(--purple); background: rgba(181,55,242,0.12); border: 1px solid rgba(181,55,242,0.25); padding: 3px 8px; border-radius: 6px; }
+    .bandar-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+    .bandar-tag.acc { color: var(--green); background: rgba(0,255,157,0.12); border: 1px solid rgba(0,255,157,0.28); }
+    .bandar-tag.dist { color: var(--red); background: rgba(255,42,95,0.12); border: 1px solid rgba(255,42,95,0.28); }
+    .bandar-tag.unknown { color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+    .meta { display: flex; gap: 11px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+    .meta b { color: #e2e8f0; font-family: 'JetBrains Mono', monospace; }
+    .tagrow { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 7px; }
 
-        .risk-selector { display: flex; gap: 8px; margin-bottom: 12px; }
-        .risk-btn { flex: 1; padding: 10px 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #94a3b8; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .risk-btn.active { background: rgba(245, 158, 11, 0.2); border-color: #f59e0b; color: #f59e0b; }
+    /* ===== STATUS ENTRY ===== */
+    .status-card { border-radius: 16px; padding: 15px; margin-bottom: 14px; border: 1px solid; }
+    .status-card.buy { background: linear-gradient(135deg, rgba(0,255,157,0.14), rgba(0,255,157,0.03)); border-color: rgba(0,255,157,0.35); }
+    .status-card.wait { background: linear-gradient(135deg, rgba(255,183,3,0.13), rgba(255,183,3,0.03)); border-color: rgba(255,183,3,0.33); }
+    .status-card.avoid { background: linear-gradient(135deg, rgba(255,42,95,0.13), rgba(255,42,95,0.03)); border-color: rgba(255,42,95,0.33); }
+    .status-head { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; animation: pulse 2s infinite; }
+    .status-card.buy .status-dot { background: var(--green); }
+    .status-card.wait .status-dot { background: var(--yellow); }
+    .status-card.avoid .status-dot { background: var(--red); }
+    .status-title { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; }
+    .status-card.buy .status-title { color: var(--green); }
+    .status-card.wait .status-title { color: var(--yellow); }
+    .status-card.avoid .status-title { color: var(--red); }
+    .status-reason { font-size: 13px; line-height: 1.55; color: #dbe4f0; }
+    .status-pos { display: inline-block; margin-top: 10px; font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; padding: 4px 10px; border-radius: 8px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.09); }
+    .trig-box { background: rgba(0,0,0,0.32); border-radius: 12px; padding: 11px 13px; margin-top: 10px; border-left: 3px solid var(--cyan); }
+    .trig-box.invalid { border-left-color: var(--red); }
+    .trig-box .t { font-size: 9px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .trig-box .v { font-size: 12.5px; line-height: 1.5; color: #e6ecf5; }
 
-        .chat-bubble { font-size: 12.5px; line-height: 1.6; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; border-left: 3px solid var(--neon-purple); white-space: pre-line; margin-top: 10px;}
-        .chat-typing:after { content: '▋'; animation: blink 1s step-start infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+    /* ===== TAB HASIL ===== */
+    .res-tabs { display: flex; gap: 5px; background: rgba(0,0,0,0.35); border-radius: 13px; padding: 4px; margin-bottom: 13px; overflow-x: auto; }
+    .res-tab { flex: 1; min-width: 62px; text-align: center; padding: 9px 6px; border-radius: 10px; font-size: 10.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; }
+    .res-tab.active { background: rgba(0,229,255,0.12); color: var(--cyan); border: 1px solid rgba(0,229,255,0.28); }
+    .res-panel { display: none; animation: fadeUp 0.25s ease; }
+    .res-panel.active { display: block; }
 
-        .ai-chat-window { display: flex; flex-direction: column; height: 65vh; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--glass-border); padding: 15px; }
-        .ai-chat-history { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 10px; }
-        .bot-msg, .user-msg { max-width: 85%; padding: 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
-        .bot-msg { background: rgba(0, 240, 255, 0.1); border-left: 3px solid var(--neon-cyan); align-self: flex-start; }
-        .user-msg { background: rgba(139, 92, 246, 0.2); border-right: 3px solid var(--neon-purple); align-self: flex-end; text-align: right; }
-        
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; display:none; justify-content:center; align-items:center; backdrop-filter: blur(5px); }
-        .modal-box { background: var(--bg-card); border: 1px solid var(--neon-purple); border-radius: 20px; padding: 25px; width: 90%; max-width: 350px; text-align: center; }
-    </style>
+    /* ===== S/R GRID ===== */
+    .sr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    .sr-cell { background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 8px; text-align: center; }
+    .sr-cell span { display: block; font-size: 9px; color: var(--muted); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+    .sr-cell b { font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+    .sr-cell.sup b { color: var(--green); }
+    .sr-cell.res b { color: #ff8aa8; }
+
+    /* ===== KONFIRMASI ===== */
+    .confirm-list { font-size: 12px; line-height: 1.85; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; }
+    .confirm-list .ok { color: var(--green); }
+    .confirm-list .no { color: var(--red); }
+    .confirm-list .last { color: var(--muted); margin-top: 4px; }
+
+    /* ===== GATE ===== */
+    .gate-item { display: flex; gap: 9px; align-items: flex-start; font-size: 12px; line-height: 1.45; padding: 9px 0; border-bottom: 1px dashed rgba(255,255,255,0.06); }
+    .gate-item:last-child { border-bottom: none; }
+    .gate-code { flex-shrink: 0; font-size: 9px; font-weight: 800; font-family: 'JetBrains Mono', monospace; padding: 3px 7px; border-radius: 6px; background: rgba(255,42,95,0.13); color: #ff8aa8; border: 1px solid rgba(255,42,95,0.25); }
+    .gate-code.soft { background: rgba(255,183,3,0.12); color: var(--yellow); border-color: rgba(255,183,3,0.28); }
+    .gate-code.clear { background: rgba(0,255,157,0.12); color: var(--green); border-color: rgba(0,255,157,0.28); }
+    .gate-text { color: #cbd5e1; }
+
+    /* ===== ANALISA ===== */
+    .ana-block { margin-bottom: 12px; }
+    .ana-block h4 { font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--cyan); margin-bottom: 5px; }
+    .ana-block p { font-size: 12.5px; line-height: 1.62; color: #d7e0ee; white-space: pre-wrap; }
+
+    .score-big { font-size: 34px; font-weight: 800; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+    .plan-box { background: rgba(0,0,0,0.3); border-radius: 13px; padding: 13px; margin-bottom: 9px; border-left: 3px solid var(--cyan); }
+    .plan-box.sl { border-left-color: var(--red); }
+    .plan-box.tp { border-left-color: var(--green); }
+    .plan-title { font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+    .plan-val { font-size: 17px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .plan-desc { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+    .info-box { background: rgba(255,183,3,0.09); border: 1px solid rgba(255,183,3,0.25); border-radius: 12px; padding: 10px 12px; font-size: 11.5px; color: #ffd166; margin-bottom: 12px; line-height: 1.45; }
+    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); font-size: 12px; gap: 10px; }
+    .row:last-child { border-bottom: none; }
+    .row span { color: var(--muted); }
+    .row b { font-family: 'JetBrains Mono', monospace; text-align: right; }
+
+    .bd { display: flex; align-items: center; gap: 9px; padding: 7px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); font-size: 11.5px; }
+    .bd:last-child { border-bottom: none; }
+    .bd-name { flex: 1; color: #cbd5e1; font-weight: 600; }
+    .bd-bar { width: 78px; height: 6px; border-radius: 4px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .bd-bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--purple)); }
+    .bd-val { width: 46px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #e2e8f0; }
+
+    .risk-row { display: flex; gap: 7px; margin: 9px 0 6px; }
+    .risk-btn { flex: 1; padding: 9px 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: var(--muted); font-size: 11px; font-weight: 800; }
+    .risk-btn.active { border-color: var(--yellow); color: var(--yellow); background: rgba(255,183,3,0.12); }
+
+    .prog { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.07); overflow: hidden; margin: 9px 0 6px; }
+    .prog > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--green)); transition: width 0.4s; }
+
+    /* ===== CHAT ===== */
+    .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 190px); min-height: 380px; }
+    .chat-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; padding-bottom: 8px; }
+    .bubble { max-width: 88%; padding: 11px 13px; border-radius: 13px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+    .bubble.user { align-self: flex-end; background: rgba(0,229,255,0.12); border: 1px solid rgba(0,229,255,0.22); }
+    .bubble.bot { align-self: flex-start; background: rgba(181,55,242,0.1); border: 1px solid rgba(181,55,242,0.2); }
+    .bubble.err { align-self: flex-start; background: rgba(255,42,95,0.1); border: 1px solid rgba(255,42,95,0.25); color: #ff9db5; }
+    .chat-input-row { display: flex; gap: 8px; margin-top: 8px; }
+    .chat-input-row input { flex: 1; padding: 12px 13px; border-radius: 13px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.35); color: #fff; outline: none; font-size: 13px; }
+    .chat-input-row button { padding: 0 16px; border: none; border-radius: 13px; background: var(--cyan); color: #001018; font-weight: 800; }
+    .ctx-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; padding: 5px 10px; border-radius: 20px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.25); color: var(--cyan); margin-bottom: 9px; }
+    .ctx-chip button { background: none; border: none; color: var(--muted); font-size: 13px; line-height: 1; }
+
+    /* ===== OUTLOOK / SEKTOR ===== */
+    .scn { background: rgba(0,0,0,0.3); border-radius: 13px; padding: 12px; margin-bottom: 9px; border-left: 3px solid var(--purple); }
+    .scn h5 { font-size: 12px; font-weight: 800; margin-bottom: 5px; color: #e2e8f0; }
+    .scn p { font-size: 11.5px; line-height: 1.55; color: var(--muted); }
+    .bias-pill { display: inline-block; font-size: 12px; font-weight: 800; padding: 6px 14px; border-radius: 20px; margin-bottom: 12px; }
+    .bias-BULLISH { background: rgba(0,255,157,0.13); color: var(--green); border: 1px solid rgba(0,255,157,0.3); }
+    .bias-NETRAL { background: rgba(255,183,3,0.12); color: var(--yellow); border: 1px solid rgba(255,183,3,0.3); }
+    .bias-BEARISH { background: rgba(255,42,95,0.12); color: var(--red); border: 1px solid rgba(255,42,95,0.3); }
+    .sec-row { display: flex; align-items: center; gap: 9px; padding: 7px 0; font-size: 12px; }
+    .sec-name { width: 92px; font-weight: 700; font-size: 11px; }
+    .sec-bar { flex: 1; height: 6px; border-radius: 4px; background: rgba(255,255,255,0.06); overflow: hidden; position: relative; }
+    .sec-bar > i { position: absolute; top: 0; height: 100%; }
+    .sec-val { width: 56px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+    /* ===== NAV ===== */
+    .bottom-nav-wrap { position: fixed; bottom: 0; left: 0; width: 100%; display: none; justify-content: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 100; background: linear-gradient(to top, var(--bg) 35%, transparent); }
+    .bottom-nav-wrap.show { display: flex; }
+    .bottom-nav { width: 94%; max-width: 430px; display: flex; justify-content: space-around; background: rgba(13,17,31,0.92); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 26px; padding: 9px 4px; }
+    .nav-item { width: 16%; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 8.5px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
+    .nav-item.active { color: var(--cyan); }
+    .nav-item .ico { font-size: 16px; }
+
+    .loading-inline { font-size: 12px; color: var(--muted); }
+    .empty { text-align: center; color: var(--muted); font-size: 13px; padding: 22px 10px; line-height: 1.5; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 96px; z-index: 500; background: rgba(13,17,31,0.96); border: 1px solid rgba(0,229,255,0.3); color: #e6ecf5; font-size: 12px; padding: 10px 16px; border-radius: 12px; opacity: 0; transition: opacity 0.25s; pointer-events: none; max-width: 90%; text-align: center; }
+    .toast.show { opacity: 1; }
+  </style>
 </head>
 <body>
+  <div id="splash">
+    <div class="splash-rocket">🚀</div>
+    <div class="splash-logo">NEXUS</div>
+    <div class="splash-sub">Precision Engine V13</div>
+    <div class="splash-bar"><i></i></div>
+  </div>
 
-<div class="ambient-orb orb-1"></div>
+  <div id="toast" class="toast"></div>
 
-<div class="app-wrapper">
-
-    <!-- 1. HALAMAN LOGIN / REGISTER -->
-    <div id="loginPage" class="view-section view-active">
-        <div style="text-align: center; margin-top: 50px; margin-bottom: 30px;">
-            <h1 style="font-size: 24px; font-weight: 800; color: var(--neon-cyan);">GACOR HUNTER</h1>
-            <p style="color: var(--neon-purple); font-size: 12px; margin-top: 5px; font-weight: bold;">AI-Driven Algorithmic Trading V6.0</p>
+  <div class="app">
+    <!-- AUTH -->
+    <div id="authView">
+      <div class="auth-brand">
+        <h1>NEXUS</h1>
+        <p>Precision Engine V13 · Bursa Efek Indonesia</p>
+      </div>
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <div class="auth-tab active" id="tabLogin" onclick="switchAuth('login')">Masuk</div>
+          <div class="auth-tab" id="tabRegister" onclick="switchAuth('register')">Daftar</div>
         </div>
-        
-        <div class="glass-card login-box">
-            <div class="auth-tabs">
-                <div id="tabLogin" class="auth-tab" onclick="switchAuthTab('login')" style="color: var(--neon-cyan); border-bottom: 2px solid var(--neon-cyan);">LOGIN</div>
-                <div id="tabRegister" class="auth-tab" onclick="switchAuthTab('register')" style="color: var(--text-muted); border-bottom: 2px solid transparent;">DAFTAR BARU</div>
-            </div>
-
-            <!-- Form Login -->
-            <div id="formLogin">
-                <input type="text" id="loginId" class="input-pro" placeholder="Username">
-                <input type="password" id="loginPass" class="input-pro" placeholder="Password">
-                <button onclick="doLogin()" class="btn-pro" id="btnLogin">MASUK SISTEM</button>
-            </div>
-
-            <!-- Form Daftar -->
-            <div id="formRegister" style="display: none;">
-                <input type="text" id="regId" class="input-pro" placeholder="Buat Username">
-                <input type="password" id="regPass" class="input-pro" placeholder="Buat Password">
-                <input type="password" id="regPass2" class="input-pro" placeholder="Konfirmasi Password">
-                <div style="font-size: 10px; color: var(--buy); margin-bottom: 10px; text-align: center;">🎁 Gratis 10x Analisa Kuota untuk Pengguna Baru!</div>
-                <button onclick="doRegister()" class="btn-pro" id="btnRegister" style="background: linear-gradient(135deg, var(--buy), var(--neon-cyan));">BUAT AKUN</button>
-            </div>
-            
-            <div id="authMessage" style="font-size: 12px; text-align: center; font-weight: bold; margin-top:10px; display: none;"></div>
+        <div class="auth-msg" id="authMsg"></div>
+        <div class="field">
+          <label>Username</label>
+          <input id="authUser" type="text" placeholder="4-32 karakter" autocomplete="username">
         </div>
+        <div class="field">
+          <label>Password</label>
+          <input id="authPass" type="password" placeholder="minimal 8 karakter" autocomplete="current-password"
+                 onkeydown="if(event.key==='Enter')submitAuth()">
+        </div>
+        <div class="field" id="inviteField" style="display:none;">
+          <label>Kode Undangan (opsional)</label>
+          <input id="authInvite" type="text" placeholder="kosongkan jika tidak perlu">
+        </div>
+        <button class="btn-main" id="authBtn" onclick="submitAuth()">Masuk</button>
+      </div>
+      <p class="disclaimer">Alat analisis data (SaaS). Bukan saran investasi atau rekomendasi perdagangan. Segala keputusan dan risiko sepenuhnya tanggung jawab pengguna.</p>
     </div>
 
-    <!-- 2. HALAMAN BERANDA -->
-    <div id="homePage" class="view-section">
-        <div class="profile-header">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="avatar" id="uiAvatar">U</div>
-                <div>
-                    <div style="font-weight: 800; font-size: 16px; color: #fff;">Halo, <span id="uiUsername">User</span> <span id="uiRoleBadge" class="role-badge" style="display:none;">PRO</span></div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Selamat datang kembali!</div>
+    <!-- APP -->
+    <div id="appView">
+
+      <!-- ================= HOME ================= -->
+      <div id="viewHome" class="view active">
+        <div class="top-row">
+          <div style="display:flex;align-items:center;gap:11px;">
+            <div class="avatar" id="userAvatar">N</div>
+            <div>
+              <div style="font-weight:800;font-size:14px;" id="userName">User</div>
+              <div style="font-size:11px;color:var(--muted);" id="userRoleLine">NEXUS V13</div>
+            </div>
+          </div>
+          <div class="quota-pill">Kuota: <span id="quotaVal">-</span></div>
+        </div>
+
+        <!-- IHSG: CHART + SNAPSHOT -->
+        <div class="glass">
+          <div class="section-label" style="justify-content:space-between;">
+            <span><span class="grad">●</span> IHSG</span>
+            <span id="ihsgHeadline" style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0;text-transform:none;">-</span>
+          </div>
+          <div class="tf-row">
+            <button class="tf-btn active" data-tf="60" onclick="setIhsgTf(60,this)">3 Bln</button>
+            <button class="tf-btn" data-tf="120" onclick="setIhsgTf(120,this)">6 Bln</button>
+            <button class="tf-btn" data-tf="9999" onclick="setIhsgTf(9999,this)">1 Thn</button>
+          </div>
+          <div id="ihsgChart" class="chart-host"></div>
+          <div class="chart-legend">
+            <span><i style="background:#00e5ff;"></i>EMA21</span>
+            <span><i style="background:#b537f2;"></i>EMA50</span>
+            <span><i style="background:#8b9bb4;"></i>Support / Resistance</span>
+          </div>
+          <div class="metric-grid" style="margin-top:12px;">
+            <div class="metric"><span>Regime</span><b id="ihsgRegime">-</b></div>
+            <div class="metric"><span>ADX</span><b id="ihsgAdx">-</b></div>
+            <div class="metric"><span>Support</span><b id="ihsgSup">-</b></div>
+            <div class="metric"><span>Resistance</span><b id="ihsgRes">-</b></div>
+          </div>
+          <div class="row"><span>Saham &gt; EMA21</span><b id="ihsgBreadth">-</b></div>
+          <div class="row"><span>ROC20 positif</span><b id="ihsgRoc">-</b></div>
+          <div class="row"><span>RSI / ATR</span><b id="ihsgRsi">-</b></div>
+          <button class="btn-ghost" style="margin-top:12px;" onclick="loadFullOutlook()">Lihat Outlook Lengkap</button>
+        </div>
+
+        <div class="glass">
+          <div class="section-label"><span class="grad">●</span> Kekuatan Sektor <span style="color:#475569;font-weight:600;text-transform:none;letter-spacing:0;">(ROC20 relatif IHSG)</span></div>
+          <div id="sectorBox"><div class="loading-inline">Memuat sektor...</div></div>
+        </div>
+
+        <div class="glass">
+          <div class="section-label"><span class="grad">●</span> Analisa Cepat</div>
+          <div class="search-box">
+            <input id="tickerInput" type="text" placeholder="KODE SAHAM" maxlength="6"
+                   onkeydown="if(event.key==='Enter')analyzeTicker()">
+            <button onclick="analyzeTicker()">→</button>
+          </div>
+          <div class="disclaimer" style="margin-top:0;">Hasil di-cache 90 menit — membuka ulang saham yang sama tidak memotong kuota.</div>
+        </div>
+
+        <div class="glass">
+          <div class="section-label"><span class="grad">●</span> Bandar Pulse</div>
+          <div id="bandarPulse"><div class="loading-inline">Belum ada data Deep Scan.</div></div>
+        </div>
+
+        <div class="glass">
+          <div class="section-label"><span class="grad">●</span> Radar Top 15</div>
+          <div id="radarList"><div class="loading-inline">Memuat radar...</div></div>
+          <div id="adminDeepWrap" style="display:none;margin-top:12px;">
+            <button class="btn-ghost yellow" id="btnDeepScan" onclick="runDeepScan()">⚡ Deep Scan Top 15 + Broksum</button>
+            <div class="prog" id="deepProgWrap" style="display:none;"><i id="deepProg"></i></div>
+            <div id="deepStatus" class="disclaimer" style="margin-top:8px;"></div>
+          </div>
+          <div class="disclaimer" id="radarMeta" style="margin-top:8px;"></div>
+        </div>
+      </div>
+
+      <!-- ================= OUTLOOK ================= -->
+      <div id="viewOutlook" class="view">
+        <div class="top-row">
+          <div style="font-weight:800;font-size:16px;">Outlook IHSG</div>
+          <button class="btn-ghost btn-sm" onclick="showView('viewHome')">←</button>
+        </div>
+        <div id="outlookBox"><div class="glass"><div class="loading-inline">Memuat outlook...</div></div></div>
+        <button class="btn-ghost btn-sm" style="width:100%;" onclick="loadFullOutlook(true)">↻ Hitung Ulang</button>
+        <div class="disclaimer" id="outlookMeta"></div>
+      </div>
+
+      <!-- ================= RESULT ================= -->
+      <div id="viewResult" class="view">
+        <div class="top-row">
+          <div>
+            <div style="font-size:19px;font-weight:800;font-family:'JetBrains Mono',monospace;" id="resTicker">-</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="resSetupLine">-</div>
+          </div>
+          <button class="btn-ghost btn-sm" onclick="showView('viewHome')">←</button>
+        </div>
+
+        <div id="dataModeBox" class="info-box" style="display:none;"></div>
+
+        <!-- STATUS ENTRY -->
+        <div id="statusCard" class="status-card wait">
+          <div class="status-head">
+            <div class="status-dot"></div>
+            <div class="status-title" id="statusTitle">-</div>
+          </div>
+          <div class="status-reason" id="statusReason">-</div>
+          <div class="status-pos" id="statusPos">-</div>
+          <div class="trig-box">
+            <div class="t">Trigger yang ditunggu</div>
+            <div class="v" id="statusTrigger">-</div>
+          </div>
+          <div class="trig-box invalid">
+            <div class="t">Batal kalau</div>
+            <div class="v" id="statusInvalid">-</div>
+          </div>
+        </div>
+
+        <div class="two" style="margin-bottom:12px;">
+          <button class="btn-ghost purple" onclick="gotoTab('panelStory')">🔍 Analisa Teliti</button>
+          <button class="btn-ghost green" onclick="addToPaperWatch()">+ Pantau Setup</button>
+        </div>
+        <div id="adminPanel" style="display:none;margin-bottom:12px;">
+          <button class="btn-ghost yellow" onclick="analyzeTicker(null, true)">⚡ Validasi Premium (GOAPI + Broksum)</button>
+        </div>
+
+        <!-- TABS -->
+        <div class="res-tabs">
+          <div class="res-tab active" data-panel="panelPlan" onclick="switchResTab(this)">Plan</div>
+          <div class="res-tab" data-panel="panelTA" onclick="switchResTab(this)">TA</div>
+          <div class="res-tab" data-panel="panelSmart" onclick="switchResTab(this)">Smart $</div>
+          <div class="res-tab" data-panel="panelStory" onclick="switchResTab(this)">Narasi</div>
+          <div class="res-tab" data-panel="panelChart" onclick="switchResTab(this)">Chart</div>
+        </div>
+
+        <!-- ---------- PANEL: PLAN ---------- -->
+        <div id="panelPlan" class="res-panel active">
+          <div class="glass">
+            <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px;">
+              <div>
+                <div class="score-big" id="resTQ">-</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:3px;">Trade Quality</div>
+              </div>
+              <div style="flex:1;">
+                <div class="tagrow">
+                  <span class="badge" id="resGrade">-</span>
+                  <span class="setup-tag" id="resSetupTag">-</span>
+                  <span class="bandar-tag unknown" id="resBandarTag">-</span>
                 </div>
+                <div class="row"><span>Technical</span><b id="resScore">-</b></div>
+                <div class="row"><span>Harga</span><b id="resPrice">-</b></div>
+                <div class="row"><span>Sumber</span><b id="resSource">-</b></div>
+              </div>
             </div>
-            <div style="background:rgba(255,255,255,0.1); padding:8px 12px; border-radius:12px; font-size: 12px; font-weight: bold; cursor:pointer;" onclick="doLogout()">Keluar</div>
-        </div>
 
-        <div class="ai-search-container">
-            <div style="padding: 0 10px; font-size: 16px;">✨</div>
-            <input type="text" id="homeSearchInput" class="ai-search-input" placeholder="Ketik Kode Saham atau Tanya AI..." onkeypress="if(event.key==='Enter') scanFromHome()">
-            <button onclick="scanFromHome()" class="ai-search-btn">➔</button>
-        </div>
-
-        <div class="quick-menu">
-            <div class="quick-item" onclick="navTo('scannerPage', document.querySelectorAll('.nav-item')[2])"><div class="quick-icon" style="color:var(--neon-cyan)">📊</div><span class="quick-text">Scan AI</span></div>
-            <div class="quick-item" onclick="navTo('watchlistPage', document.querySelectorAll('.nav-item')[1])"><div class="quick-icon" style="color:var(--neon-purple)">⭐</div><span class="quick-text">Top 10</span></div>
-            <div class="quick-item" onclick="navTo('aiChatPage', document.querySelectorAll('.nav-item')[3])"><div class="quick-icon" style="color:var(--neon-cyan)">🤖</div><span class="quick-text">Tanya AI</span></div>
-            <div class="quick-item" onclick="openTopupModal()"><div class="quick-icon" style="color:var(--buy)">💬</div><span class="quick-text">Komunitas</span></div>
-        </div>
-
-        <!-- INFO SALDO DAN KUOTA -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
-            <div class="glass-card" style="margin-bottom: 0;">
-                <div style="font-size:10px; color:var(--text-muted); font-weight:bold; margin-bottom:8px;">SALDO AKTIF</div>
-                <div style="font-size: 18px; font-weight: 800; color: #fff; font-family:'JetBrains Mono';" id="uiSaldo">Rp 0</div>
+            <div class="plan-box">
+              <div class="plan-title">Zona Entry</div>
+              <div class="plan-val" id="resEntry">-</div>
+              <div class="plan-desc" id="resAnchor">-</div>
             </div>
-            <div class="glass-card" style="margin-bottom: 0;">
-                <div style="font-size:10px; color:var(--text-muted); font-weight:bold; margin-bottom:8px;">SISA KUOTA AI</div>
-                <div style="font-size: 20px; font-weight: 800; color: var(--neon-purple);"><span id="uiKuota">0</span><span style="font-size:12px; color:#fff"> x</span></div>
-                <div style="font-size:9px; color:var(--text-muted); margin-top:5px; line-height: 1.3;">Tarif: Rp 1.000/scan jika gratis habis.</div>
+            <div class="plan-box sl">
+              <div class="plan-title">Stop Loss</div>
+              <div class="plan-val" id="resSL">-</div>
+              <div class="plan-desc" id="resRiskPct">-</div>
             </div>
+            <div class="plan-box tp">
+              <div class="plan-title">Take Profit</div>
+              <div class="plan-val" id="resTP">-</div>
+              <div class="plan-desc" id="resTPSrc">-</div>
+            </div>
+            <div class="row" style="margin-top:6px;"><span>RR ke TP1 (worst fill)</span><b id="resRR">-</b></div>
+            <div class="row"><span>RR dari harga sekarang</span><b id="resRRNow">-</b></div>
+          </div>
+
+          <!-- SUPPORT / RESISTANCE -->
+          <div class="glass">
+            <div class="section-label"><span class="grad">●</span> Support / Resistance</div>
+            <div class="sr-grid">
+              <div class="sr-cell sup"><span>Nearest Sup</span><b id="resNSup">-</b></div>
+              <div class="sr-cell res"><span>Nearest Res</span><b id="resNRes">-</b></div>
+              <div class="sr-cell sup"><span>Swing Low</span><b id="resSwL">-</b></div>
+              <div class="sr-cell res"><span>Swing High</span><b id="resSwH">-</b></div>
+              <div class="sr-cell sup"><span>Dynamic Sup</span><b id="resDSup">-</b></div>
+              <div class="sr-cell res"><span>Dynamic Res</span><b id="resDRes">-</b></div>
+              <div class="sr-cell sup"><span>Fibo Sup</span><b id="resFSup">-</b></div>
+              <div class="sr-cell res"><span>Fibo Res</span><b id="resFRes">-</b></div>
+            </div>
+            <div id="resLevelsList" style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.6;"></div>
+          </div>
+
+          <!-- KONFIRMASI -->
+          <div class="glass">
+            <div class="section-label"><span class="grad">●</span> Konfirmasi</div>
+            <div class="confirm-list" id="resConfirm">-</div>
+          </div>
+
+          <!-- GATE -->
+          <div class="glass" id="gateBox">
+            <div class="section-label"><span class="grad">●</span> Catatan Gate <span id="gateCount" style="color:#475569;font-weight:600;"></span></div>
+            <div id="gateList"></div>
+          </div>
+
+          <!-- POSITION SIZE -->
+          <div class="glass">
+            <div class="section-label"><span class="grad">●</span> Position Size</div>
+            <div class="risk-row">
+              <button class="risk-btn active" data-risk="1" onclick="setRisk(1,this)">1%</button>
+              <button class="risk-btn" data-risk="1.5" onclick="setRisk(1.5,this)">1.5%</button>
+              <button class="risk-btn" data-risk="2" onclick="setRisk(2,this)">2%</button>
+            </div>
+            <div class="field" style="margin-top:6px;">
+              <label>Modal (Rp)</label>
+              <input id="capitalInput" type="number" value="10000000" oninput="calcLot()">
+            </div>
+            <div class="row"><span>Risiko per lembar</span><b id="resRiskShare">-</b></div>
+            <div class="row"><span>Estimasi lot</span><b id="resLot">-</b></div>
+            <div class="row"><span>Nilai posisi</span><b id="resPosVal">-</b></div>
+            <div class="disclaimer" style="text-align:left;">Dihitung dari entryHigh − SL. Belum termasuk fee broker.</div>
+          </div>
         </div>
 
-        <div class="glass-card">
-            <h3 class="section-title"><span style="color:var(--neon-cyan)">📰</span> SENTIMEN IHSG HARI INI</h3>
-            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;" id="ihsgOutlook">Memuat analisis IHSG Realtime...</p>
+        <!-- ---------- PANEL: TA ---------- -->
+        <div id="panelTA" class="res-panel">
+          <div class="glass">
+            <div class="section-label"><span class="grad">●</span> Konteks Teknikal</div>
+            <div class="row"><span>Arah Dominan</span><b id="resArah">-</b></div>
+            <div class="row"><span>Struktur</span><b id="resStruct">-</b></div>
+            <div class="row"><span>Cross Align</span><b id="resCross">-</b></div>
+            <div class="row"><span>EMA 21 / 50 / 99</span><b id="resEMA">-</b></div>
+            <div class="row"><span>MACD</span><b id="resMACD">-</b></div>
+            <div class="row"><span>RSI</span><b id="resRSI">-</b></div>
+            <div class="row"><span>ADX</span><b id="resADX">-</b></div>
+            <div class="row"><span>ATR</span><b id="resATR">-</b></div>
+            <div class="row"><span>RVOL</span><b id="resRvol">-</b></div>
+            <div class="row"><span>RS vs IHSG 20D</span><b id="resRS">-</b></div>
+            <div class="row"><span>Likuiditas 20D</span><b id="resLiq">-</b></div>
+            <div class="row"><span>Sektor</span><b id="resSector">-</b></div>
+            <div class="row"><span>Market Regime</span><b id="resRegime">-</b></div>
+          </div>
+          <div class="glass">
+            <div class="section-label"><span class="grad">●</span> Rincian Skor Teknikal</div>
+            <div id="scoreBreak"></div>
+          </div>
         </div>
 
-        <h3 class="section-title">MARKET CHART IHSG</h3>
-        <div style="height: 280px; background: #080A10; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;" id="tv_chart_container"></div>
+        <!-- ---------- PANEL: SMART MONEY ---------- -->
+        <div id="panelSmart" class="res-panel">
+          <div class="glass" id="broksumBox">
+            <div class="section-label"><span class="grad">●</span> Bandarmologi (Broker Summary)</div>
+            <div id="broksumInner"></div>
+          </div>
+        </div>
+
+        <!-- ---------- PANEL: NARASI ---------- -->
+        <div id="panelStory" class="res-panel">
+          <div class="glass">
+            <div class="section-label" style="justify-content:space-between;">
+              <span><span class="grad">●</span> Analisa Teliti</span>
+              <span id="anaSrc" style="color:#475569;font-weight:600;text-transform:none;letter-spacing:0;"></span>
+            </div>
+            <div id="anaContent"><div class="empty">Tekan tombol di bawah untuk menyusun analisa.</div></div>
+            <button class="btn-ghost purple" id="btnAnalisa" style="margin-top:10px;" onclick="loadAnalisa()">Susun Analisa</button>
+          </div>
+        </div>
+
+        <!-- ---------- PANEL: CHART ---------- -->
+        <div id="panelChart" class="res-panel">
+          <div class="glass">
+            <div class="section-label"><span class="grad">●</span> Chart + Level</div>
+            <div id="chartBox" class="chart-host"></div>
+            <div class="chart-legend">
+              <span><i style="background:#00e5ff;"></i>Zona entry</span>
+              <span><i style="background:#ff2a5f;"></i>Stop loss</span>
+              <span><i style="background:#00ff9d;"></i>TP1 / TP2</span>
+              <span><i style="background:#8b9bb4;"></i>Support / Resistance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= LISTS ================= -->
+      <div id="viewAccum" class="view">
+        <div class="section-label"><span class="grad">●</span> Akumulasi Bandar</div>
+        <div id="accumList"><div class="empty">Belum ada data. Jalankan Deep Scan (Admin).</div></div>
+      </div>
+      <div id="viewDist" class="view">
+        <div class="section-label"><span class="grad">●</span> Distribusi Bandar</div>
+        <div id="distList"><div class="empty">Belum ada data. Jalankan Deep Scan (Admin).</div></div>
+      </div>
+      <div id="viewPremium" class="view">
+        <div class="section-label"><span class="grad">●</span> Premium Watchlist</div>
+        <div id="premiumList"><div class="empty">Belum ada data. Jalankan Deep Scan (Admin).</div></div>
+      </div>
+
+      <!-- ================= CHAT ================= -->
+      <div id="viewChat" class="view">
+        <div class="section-label" style="justify-content:space-between;">
+          <span><span class="grad">●</span> NEXUS Chat</span>
+          <span id="chatQuotaLbl" style="color:#475569;font-weight:600;text-transform:none;letter-spacing:0;"></span>
+        </div>
+        <div id="chatCtxWrap"></div>
+        <div class="glass chat-wrap">
+          <div class="chat-log" id="chatLog">
+            <div class="bubble bot">Halo. Tanya apa saja soal teknikal atau setup. Kalau kamu baru membuka analisa sebuah saham, angka-angkanya otomatis ikut terkirim sebagai konteks — jadi jawabannya tidak mengarang harga.</div>
+          </div>
+          <div class="chat-input-row">
+            <input id="chatInput" type="text" placeholder="Tulis pertanyaan..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button onclick="sendChat()">Kirim</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= PROFILE ================= -->
+      <div id="viewProfile" class="view">
+        <div class="glass">
+          <div class="section-label"><span class="grad">●</span> Profil</div>
+          <div class="row"><span>Username</span><b id="profUser">-</b></div>
+          <div class="row"><span>Role</span><b id="profRole">-</b></div>
+          <div class="row"><span>Kuota scan bulan ini</span><b id="profQuota">-</b></div>
+        </div>
+        <div class="glass">
+          <div class="section-label"><span class="grad">●</span> Paper Watchlist Saya</div>
+          <div id="myWatchList"><div class="empty">Belum ada setup yang dipantau.</div></div>
+        </div>
+        <div class="glass" id="diagBox" style="display:none;">
+          <div class="section-label"><span class="grad">●</span> Diagnostik (Admin)</div>
+          <button class="btn-ghost btn-sm" style="width:100%;" onclick="loadDiag()">Jalankan Cek Sistem</button>
+          <div id="diagOut" style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;"></div>
+        </div>
+        <button class="btn-ghost red" onclick="logout()">Keluar</button>
+        <p class="disclaimer" style="margin-top:14px;">
+          NEXUS V13 — Precision Engine<br>
+          Perangkat lunak analisis data (SaaS).<br>
+          Bukan penasihat investasi berizin OJK.<br>
+          Segala risiko ditanggung pengguna.
+        </p>
+      </div>
     </div>
+  </div>
 
-    <!-- 3. WATCHLIST -->
-    <div id="watchlistPage" class="view-section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 class="section-title" style="margin:0;">⭐ Top 10 Radar</h3>
-            <button id="btnUpdateRadar" onclick="forceUpdateRadar()" style="display:none; background: rgba(139,92,246,0.2); border: 1px solid var(--neon-purple); color: #fff; border-radius: 8px; padding: 6px 10px; font-size: 10px; cursor: pointer; font-weight: bold;">🔄 Update</button>
-        </div>
-        <div id="fullWatchlistGrid"><div class="glass-card" style="text-align:center; padding:30px; color:var(--text-muted);">Menunggu data bursa...</div></div>
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav-wrap" id="bottomNav">
+    <div class="bottom-nav">
+      <div class="nav-item active" data-view="viewHome" onclick="showView('viewHome')"><span class="ico">⌂</span>Home</div>
+      <div class="nav-item" data-view="viewAccum" onclick="showView('viewAccum');loadAccumulation()"><span class="ico">↑</span>Akum</div>
+      <div class="nav-item" data-view="viewDist" onclick="showView('viewDist');loadDistribution()"><span class="ico">↓</span>Dist</div>
+      <div class="nav-item" data-view="viewPremium" onclick="showView('viewPremium');loadPremium()"><span class="ico">★</span>Watch</div>
+      <div class="nav-item" data-view="viewChat" onclick="showView('viewChat');openChat()"><span class="ico">✦</span>Chat</div>
+      <div class="nav-item" data-view="viewProfile" onclick="showView('viewProfile');loadProfile()"><span class="ico">◉</span>Profil</div>
     </div>
+  </div>
 
-    <!-- 4. SCANNER MANUAL -->
-    <div id="scannerPage" class="view-section">
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-            <div onclick="navTo('homePage', document.querySelectorAll('.nav-item')[0])" style="width:40px; height:40px; border-radius:12px; background:var(--bg-card); border: 1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; cursor: pointer; color: #fff; font-size: 20px;">&larr;</div>
-            <h3 class="section-title" style="margin: 0;">SCAN & VISION AI</h3>
-        </div>
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+  <script>
+// =====================================================================
+// CONFIG — ganti dengan Web App URL hasil deploy backend V13
+// =====================================================================
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw4VYls7gzCSglY7S9fGswe-Ry-viE3ZovTKCQwyvVUqTs581Y02lPZskeQeAetUgAU/exec";
 
-        <div class="glass-card" style="text-align: center;">
-            <input type="text" id="tickerInput" class="input-pro" placeholder="KODE TICKER (Cth: GOTO)" style="text-align: center; font-size: 20px; font-weight: 800; text-transform: uppercase;">
-            <div class="upload-dropzone" onclick="document.getElementById('fileInput').click()">
-                <div style="font-size: 20px; margin-bottom: 5px;">📸</div>
-                <div style="font-size: 11px; color: var(--text-muted);" id="uploadText">Opsional: Upload Screenshot Broker<br>(Vision AI - Otomatis Dikompresi)</div>
-                <input type="file" id="fileInput" accept="image/*" onchange="handleImage(event)" style="display:none;">
-                <div id="previewContainer" style="display:none; position:relative; margin-top:10px;">
-                    <img id="imagePreview" src="" style="max-height:100px; border-radius:8px;">
-                    <div onclick="removeImage(event)" style="position:absolute; top:-10px; right:-10px; background:var(--skip); width:25px; height:25px; border-radius:50%; color:white; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10;">X</div>
-                </div>
-            </div>
-            <button onclick="startEngine()" class="btn-pro" id="btnScan">⚡ ANALISA SEKARANG</button>
-        </div>
-        
-        <div id="trackerBox" style="display: none; background: rgba(5,5,15,0.8); border: 1px solid var(--neon-cyan); padding: 20px; border-radius: 12px; color: var(--neon-cyan); font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-bottom: 15px;"></div>
+const STORAGE_KEY = "nexus_v13_session";
+let session     = null;
+let authMode    = "login";
+let currentRisk = 1;
+let lastResult  = null;
+let chatCtx     = null;
+let ihsgData    = null;
+let ihsgTf      = 60;
+let chart = null, candleSeries = null, volSeries = null;
+let ihsgChart = null, ihsgCandle = null, ihsgE21 = null, ihsgE50 = null;
+let chartDirty = true;
+let deepPoll = null;
 
-        <div id="resultBox" style="display: none;">
-            
-            <div style="text-align:center; margin-bottom:15px;">
-                <div style="font-size:14px; font-weight:bold; letter-spacing:1px; background: rgba(255,255,255,0.1); display:inline-block; padding: 6px 15px; border-radius:20px;" id="outTicker">...</div>
-            </div>
+function $(id) { return document.getElementById(id); }
 
-            <!-- UI: STRUCTURED SCORING BOX V5.5 -->
-            <div class="v5-box">
-                <div class="v5-title">⚙️ STRUCTURED SCORING (100)</div>
-                <div style="text-align:center; margin-top: 15px;">
-                    <div style="font-size:56px; font-weight:900; font-family:'JetBrains Mono';" id="scoreTotalVal">0</div>
-                </div>
-                <div class="score-progress-bg">
-                    <div class="score-progress-bar" id="scoreProgressBar" style="width: 0%; background: var(--skip);"></div>
-                </div>
-                
-                <div class="v5-score-row"><span>Structure HH/HL/LH/LL (20)</span><span class="v5-score-val" id="scStruct">0</span></div>
-                <div class="v5-score-row"><span>EMA 5 / 21 + Trend (15)</span><span class="v5-score-val" id="scEma">0</span></div>
-                <div class="v5-score-row"><span>MACD Momentum (10)</span><span class="v5-score-val" id="scMacd">0</span></div>
-                <div class="v5-score-row"><span>Fibonacci / Harmonic S&R (10)</span><span class="v5-score-val" id="scFibo">0</span></div>
-                <div class="v5-score-row"><span>Classic S&R (10)</span><span class="v5-score-val" id="scClassic">0</span></div>
-                <div class="v5-score-row"><span>Dynamic S&R (EMA 21/34/99) (10)</span><span class="v5-score-val" id="scDynamic">0</span></div>
-                <div class="v5-score-row"><span>Momentum + Volume (15)</span><span class="v5-score-val" id="scMom">0</span></div>
-                <div class="v5-score-row"><span>Setup + Risk/Reward (10)</span><span class="v5-score-val" id="scRr">0</span></div>
-            </div>
+function esc(s) {
+  return String(s === null || s === undefined ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function fmt(n) {
+  return (n === null || n === undefined || isNaN(n)) ? "-" : Number(n).toLocaleString("id-ID");
+}
+function fmtRp(v) {
+  if (!v && v !== 0) return "-";
+  if (v >= 1e12) return "Rp" + (v / 1e12).toFixed(2) + " T";
+  if (v >= 1e9)  return "Rp" + (v / 1e9).toFixed(2) + " M";
+  if (v >= 1e6)  return "Rp" + (v / 1e6).toFixed(1) + " jt";
+  return "Rp" + fmt(Math.round(v));
+}
 
-            <!-- LOGICAL TRADING PLAN -->
-            <div class="v5-box">
-                <div class="v5-title" style="color:#f43f5e;">🎯 LOGICAL TRADING PLAN</div>
-                <div class="v5-row"><span>Realtime Price</span><span class="v5-val" style="color:var(--neon-cyan)" id="v5Price">-</span></div>
-                <div class="v5-row"><span>Arah Dominan</span><span class="v5-val" style="color:var(--wait)" id="v5Arah">-</span></div>
-                <div class="v5-row"><span>Struktur Swing</span><span class="v5-val" id="v5Swing">-</span></div>
-                <div class="v5-row"><span>EMA 5 / EMA 21</span><span class="v5-val" id="v5Ema">-</span></div>
-                <div class="v5-row"><span>MACD</span><span class="v5-val" id="v5Macd">-</span></div>
-                <div class="v5-row"><span>Golden/Death Cross</span><span class="v5-val" id="v5Cross">-</span></div>
-            </div>
+let toastTimer = null;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 3200);
+}
 
-            <!-- SUPPORT / RESISTANCE MAP -->
-            <div class="v5-box">
-                <div class="v5-title" style="color:#e879f9;">📍 SUPPORT / RESISTANCE MAP</div>
-                <div class="v5-row"><span>Classic S/R</span><span class="v5-val" id="v5Classic">-</span></div>
-                <div class="v5-row"><span>Dynamic S/R (EMA)</span><span class="v5-val" id="v5Dynamic">-</span></div>
-                <div class="v5-row"><span>Fibo S/R</span><span class="v5-val" id="v5Fibo">-</span></div>
-            </div>
-
-            <!-- ENTRY & EXIT ZONES -->
-            <div class="v5-box box-entry">
-                <div class="v5-title" style="color:var(--buy)">🛒 STRICT ENTRY ZONE <span style="float:right; font-family:'JetBrains Mono'; font-size:12px;" id="v5EntryZone">-</span></div>
-                <div style="font-size:11px; color:var(--text-muted); line-height:1.4;" id="v5EntryDesc">-</div>
-            </div>
-
-            <div class="v5-box box-trigger">
-                <div class="v5-title" style="color:var(--wait)">⚡ ENTRY TRIGGER</div>
-                <div style="font-size:11px; font-weight:bold; color:#fff;" id="v5Trigger">-</div>
-            </div>
-
-            <div class="v5-box box-cutloss">
-                <div class="v5-title" style="color:var(--skip)">🛑 INVALIDATION / CUT LOSS <span style="float:right; font-family:'JetBrains Mono'; font-size:12px;" id="v5Sl">-</span></div>
-            </div>
-
-            <div class="v5-box">
-                <div class="v5-row"><span>🎯 TP 1</span><span class="v5-val" style="color:var(--neon-cyan)" id="v5Tp1">-</span></div>
-                <div class="v5-row"><span>🎯 TP 2</span><span class="v5-val" style="color:var(--neon-purple)" id="v5Tp2">-</span></div>
-                <div class="v5-row"><span>📐 Risk / Reward</span><span class="v5-val" id="v5RR">-</span></div>
-                <div class="v5-row" style="flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 5px;">
-                    <span style="color:var(--wait); font-weight:bold;">🧭 Exit Trigger</span>
-                    <span class="v5-val" style="color:var(--text-muted); font-size:11px; text-align:left; font-family:'Inter', sans-serif;" id="v5ExitTrigger">-</span>
-                </div>
-            </div>
-
-            <!-- KESIMPULAN AI & BERITA -->
-            <div class="v5-box">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div class="v5-title" style="margin:0; color:var(--neon-cyan);">🤖 SENTIMEN AI HARI INI</div>
-                    <button id="devilBtn" onclick="toggleDevilMode()" style="background: rgba(236,72,153,0.15); border: 1px solid var(--skip); color: var(--skip); border-radius: 8px; padding: 4px 10px; font-size: 9px; cursor: pointer; font-weight:bold;">🛡️ Risiko</button>
-                </div>
-                <div id="aiChatConclusion" class="chat-bubble chat-typing"></div>
-            </div>
-
-            <!-- RISK SIZER -->
-            <div class="v5-box" style="margin-top: 20px;">
-                <div class="v5-title" style="color:#fbbf24;">⚖️ KALKULATOR LOT (MONEY MANAGEMENT)</div>
-                <div class="risk-selector" id="riskSelector">
-                    <button class="risk-btn" data-risk="0.01" onclick="setRisk(this)">Risk 1%</button>
-                    <button class="risk-btn active" data-risk="0.02" onclick="setRisk(this)">Risk 2%</button>
-                    <button class="risk-btn" data-risk="0.05" onclick="setRisk(this)">Risk 5%</button>
-                </div>
-                <input type="number" id="capitalInput" class="input-pro" style="padding:10px; margin-bottom:10px; background:rgba(0,0,0,0.5);" placeholder="Modal Trading (Rp)">
-                <button onclick="calculateLots()" class="btn-pro" style="padding:10px; font-size:12px;">HITUNG MAKSIMAL LOT</button>
-                <div class="v5-row" style="margin-top:10px; border:none;"><span>Maks. Pembelian</span><span class="v5-val" id="calcLot" style="color:var(--buy)">0 Lot</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. CHAT AI -->
-    <div id="aiChatPage" class="view-section">
-        <h3 class="section-title"><span class="gradient-text" style="color:var(--neon-cyan)">🤖</span> Asisten Edukasi Saham</h3>
-        <div class="ai-chat-window">
-            <div class="ai-chat-history" id="aiChatHistory"><div class="bot-msg">Halo! Saya Gacor Hunter AI. Ada pertanyaan seputar teknikal saham? (1 chat = 1 kuota/Rp 1.000)</div></div>
-            <div class="ai-chat-input-area" style="display:flex; gap:8px; margin-top:10px;">
-                <input type="text" id="aiChatInput" style="flex:1; padding:12px; border-radius:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; font-size:13px;" placeholder="Tanya sesuatu..." onkeypress="if(event.key==='Enter') sendGeneralChat()">
-                <button class="ai-search-btn" id="btnSendChat" onclick="sendGeneralChat()">➔</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- POP-UP MODAL DISCORD / TOPUP -->
-    <div class="modal-overlay" id="topupModal">
-        <div class="modal-box">
-            <h3 style="margin-bottom: 15px; font-size: 18px; color: #fff;">💎 Komunitas & Top-up</h3>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Pilih menu layanan di bawah ini:</p>
-            <button onclick="window.open('https://discord.gg/tTZX5xg4y', '_blank')" style="width:100%; padding: 14px; border-radius: 12px; background: rgba(139, 92, 246, 0.2); border: 1px solid var(--neon-purple); color: #fff; font-weight: bold; margin-bottom: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><span style="font-size: 18px;">👾</span> Join Server Discord</button>
-            <button onclick="window.open('https://wa.me/6281462364686?text=Halo%20Admin,%20saya%20ingin%20topup%20saldo%20akun%20Gacor%20Hunter.', '_blank')" style="width:100%; padding: 14px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid var(--buy); color: #fff; font-weight: bold; margin-bottom: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><span style="font-size: 18px;">💬</span> Chat Admin (WA)</button>
-            <div onclick="closeTopupModal()" style="font-size: 12px; color: var(--skip); cursor: pointer; font-weight: bold;">Tutup</div>
-        </div>
-    </div>
-
-    <div class="bottom-nav-container" id="bottomNav">
-        <nav class="bottom-nav">
-            <div class="nav-item active" onclick="navTo('homePage', this)"><div class="nav-icon">🏠</div><span>Home</span></div>
-            <div class="nav-item" onclick="navTo('watchlistPage', this)"><div class="nav-icon">⭐</div><span>Top 10</span></div>
-            <div class="nav-item" onclick="navTo('scannerPage', this)"><div class="nav-icon">📊</div><span>Scan</span></div>
-            <div class="nav-item" onclick="navTo('aiChatPage', this)"><div class="nav-icon">🤖</div><span>Chat AI</span></div>
-            <div class="nav-item" onclick="openTopupModal()"><div class="nav-icon">💎</div><span>Topup</span></div>
-        </nav>
-    </div>
-</div>
-
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-<script>
-    // URL V6.0 Backend
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzUkvjvuq4htt6VFPsMbEpnXGAWBSr_RufGp0tAcPBw1jBajlxESxwlz-6UGzJxDGCq/exec";
-
-    window.currentEntry = 0; window.currentSL = 0; 
-    let baseAnalysis = "", devilAnalysis = "", isDevilMode = false, currentRiskPercent = 0.02;
-
-    // Helper: Timeout fetch to prevent freezing
-    async function fetchWithTimeout(resource, options = {}) {
-        const { timeout = 25000 } = options; // Default 25 detik
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), timeout);
-        try {
-            const response = await fetch(resource, { ...options, signal: controller.signal });
-            clearTimeout(id);
-            return response;
-        } catch (err) {
-            clearTimeout(id);
-            throw err; // Lempar error ke parent agar ditangkap try/catch
-        }
+// =====================================================================
+// API
+// =====================================================================
+async function api(action, payload = {}, timeout = 45000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeout);
+  try {
+    const body = Object.assign({ action: action }, payload);
+    if (session && session.token) body.token = session.token;
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+      redirect: "follow"
+    });
+    clearTimeout(timer);
+    const data = await res.json();
+    if (data && data.code === "AUTH") {
+      clearSession();
+      toast("Sesi berakhir. Silakan masuk lagi.");
+      setTimeout(() => location.reload(), 1200);
+      return { status: "error", message: "Sesi berakhir." };
     }
+    if (data && typeof data.remaining === "number") setQuota(data.remaining);
+    return data;
+  } catch (e) {
+    clearTimeout(timer);
+    throw e;
+  }
+}
 
-    window.onload = function() {
-        new TradingView.widget({ "autosize": true, "symbol": "IDX:COMPOSITE", "interval": "D", "theme": "dark", "style": "1", "hide_top_toolbar": true, "hide_legend": true, "container_id": "tv_chart_container", "backgroundColor": "#080A10" });
-        checkAuth(); 
-        fetchRealtimeIHSG();
-    };
+function setQuota(v) {
+  const txt = (v < 0) ? "∞" : fmt(v);
+  if ($("quotaVal")) $("quotaVal").textContent = txt;
+  if ($("profQuota")) $("profQuota").textContent = txt;
+  if (session) { session.quota = v; localStorage.setItem(STORAGE_KEY, JSON.stringify(session)); }
+}
 
-    async function fetchRealtimeIHSG() {
-        try {
-            let res = await fetchWithTimeout(GAS_URL + "?action=getIHSG", { timeout: 10000 });
-            let data = await res.json();
-            if(data.status === "success") document.getElementById("ihsgOutlook").innerHTML = data.outlook;
-            else document.getElementById("ihsgOutlook").innerHTML = "IHSG gagal dimuat dari server.";
-        } catch(e) { 
-            document.getElementById("ihsgOutlook").innerHTML = "Koneksi ke server IHSG sedang lambat atau terputus."; 
-        }
+// =====================================================================
+// SESSION + AUTH
+// =====================================================================
+function saveSession(d) { session = d; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+function loadSession() { try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+function clearSession() { session = null; localStorage.removeItem(STORAGE_KEY); }
+
+function switchAuth(mode) {
+  authMode = mode;
+  $("tabLogin").classList.toggle("active", mode === "login");
+  $("tabRegister").classList.toggle("active", mode === "register");
+  $("inviteField").style.display = mode === "register" ? "block" : "none";
+  $("authBtn").textContent = mode === "login" ? "Masuk" : "Daftar";
+  $("authMsg").className = "auth-msg";
+}
+
+function showAuthMsg(text, ok) {
+  const m = $("authMsg");
+  m.textContent = text;
+  m.className = "auth-msg " + (ok ? "ok" : "err");
+}
+
+async function submitAuth() {
+  const u = $("authUser").value.trim().toLowerCase();
+  const p = $("authPass").value;
+  if (!u || !p) return showAuthMsg("Username dan password wajib diisi.", false);
+  if (GAS_URL.indexOf("PASTE_") === 0) return showAuthMsg("GAS_URL belum diisi di file HTML ini.", false);
+
+  const btn = $("authBtn");
+  btn.disabled = true;
+  btn.textContent = "Memproses...";
+  try {
+    const d = await api("auth", {
+      type: authMode, username: u, login_id: u, password: p,
+      invite: $("authInvite").value.trim()
+    }, 30000);
+    if (d.status !== "success") { showAuthMsg(d.message || "Gagal.", false); return; }
+    if (authMode === "register") {
+      showAuthMsg(d.message || "Akun dibuat. Silakan masuk.", true);
+      switchAuth("login");
+      return;
     }
+    saveSession(d);
+    enterApp();
+  } catch (e) {
+    showAuthMsg("Tidak bisa menghubungi server. Cek GAS_URL & koneksi.", false);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = authMode === "login" ? "Masuk" : "Daftar";
+  }
+}
 
-    function checkAuth() {
-        let user = localStorage.getItem("gacor_user");
-        if(user) { 
-            setupDashboard(JSON.parse(user)); 
-            navTo('homePage', document.querySelectorAll('.nav-item')[0]); 
-            document.getElementById("bottomNav").style.display = "flex"; 
-        } else { 
-            document.getElementById("bottomNav").style.display = "none"; 
-            navTo('loginPage'); 
-        }
+function logout() {
+  api("logout").catch(() => {});
+  clearSession();
+  location.reload();
+}
+
+function enterApp() {
+  $("authView").classList.remove("show");
+  $("appView").classList.add("show");
+  $("bottomNav").classList.add("show");
+
+  $("userName").textContent = session.username;
+  $("userAvatar").textContent = session.username.charAt(0).toUpperCase();
+  $("userRoleLine").textContent = "NEXUS V13 · " + (session.role || "USER");
+  $("profUser").textContent = session.username;
+  $("profRole").textContent = session.role || "USER";
+  setQuota(typeof session.quota === "number" ? session.quota : 0);
+
+  if (session.role === "ADMIN") {
+    $("adminDeepWrap").style.display = "block";
+    $("adminPanel").style.display = "block";
+    $("diagBox").style.display = "block";
+  }
+  showView("viewHome");
+  loadIHSG();
+  loadSectorStrength();
+  loadRadar();
+  loadBandarPulse();
+  checkDeepStatus(true);
+}
+
+function showView(id) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  $(id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.view === id));
+  window.scrollTo(0, 0);
+  if (id === "viewHome") setTimeout(() => resizeOne(ihsgChart, "ihsgChart"), 80);
+  if (id === "viewResult") setTimeout(() => resizeOne(chart, "chartBox"), 80);
+}
+
+// =====================================================================
+// IHSG — snapshot + CHART (kunci utama dashboard)
+// =====================================================================
+async function loadIHSG() {
+  try {
+    const d = await api("getIHSG", {}, 30000);
+    if (d.status !== "success") return;
+    ihsgData = d;
+
+    const up = d.changePct >= 0;
+    $("ihsgHeadline").innerHTML = '<b style="font-size:15px;">' + fmt(d.price) + '</b> ' +
+      '<span style="color:' + (up ? "var(--green)" : "var(--red)") + ';">' + (up ? "▲ +" : "▼ ") + d.changePct + '%</span>';
+    $("ihsgRegime").textContent = d.regime;
+    $("ihsgRegime").style.color = d.regime === "BULLISH" ? "var(--green)" : d.regime === "BEARISH" ? "var(--red)" : "var(--yellow)";
+    $("ihsgAdx").textContent = d.adx;
+    $("ihsgSup").textContent = fmt(d.support);
+    $("ihsgRes").textContent = fmt(d.resistance);
+    const b = d.breadth || {};
+    $("ihsgBreadth").textContent = b.aboveEma21Pct != null ? b.aboveEma21Pct + "% (" + (b.sampleSize || 0) + " saham)" : "belum ada EOD";
+    $("ihsgRoc").textContent = b.positiveRoc20Pct != null ? b.positiveRoc20Pct + "%" : "belum ada EOD";
+    $("ihsgRsi").textContent = d.rsi + " / " + d.atrPct + "%";
+
+    renderIhsgChart();
+  } catch (e) { /* diam */ }
+}
+
+function setIhsgTf(n, el) {
+  ihsgTf = n;
+  document.querySelectorAll(".tf-btn").forEach(b => b.classList.remove("active"));
+  if (el) el.classList.add("active");
+  renderIhsgChart();
+}
+
+function renderIhsgChart() {
+  const box = $("ihsgChart");
+  if (!ihsgData || !ihsgData.chart || !ihsgData.chart.bars || !ihsgData.chart.bars.length) {
+    box.innerHTML = '<div class="empty">Data chart IHSG belum tersedia.</div>';
+    return;
+  }
+  if (!window.LightweightCharts) {
+    box.innerHTML = '<div class="empty">Library chart gagal dimuat. Cek koneksi ke unpkg.com.</div>';
+    return;
+  }
+  if (ihsgChart) { try { ihsgChart.remove(); } catch (e) {} ihsgChart = null; }
+  box.innerHTML = "";
+
+  const all = ihsgData.chart.bars;
+  const bars = all.slice(Math.max(0, all.length - ihsgTf));
+  const minT = bars[0].t;
+
+  ihsgChart = LightweightCharts.createChart(box, {
+    width: box.clientWidth || 340,
+    height: 210,
+    layout: { background: { color: "#070b14" }, textColor: "#8b9bb4", fontSize: 9 },
+    grid: { vertLines: { color: "rgba(255,255,255,0.03)" }, horzLines: { color: "rgba(255,255,255,0.03)" } },
+    rightPriceScale: { borderColor: "rgba(255,255,255,0.07)", scaleMargins: { top: 0.14, bottom: 0.12 } },
+    timeScale: { borderColor: "rgba(255,255,255,0.07)", rightOffset: 3 },
+    handleScale: { axisPressedMouseMove: false },
+    crosshair: { mode: 0 }
+  });
+
+  ihsgCandle = ihsgChart.addCandlestickSeries({
+    upColor: "#00ff9d", downColor: "#ff2a5f",
+    borderUpColor: "#00ff9d", borderDownColor: "#ff2a5f",
+    wickUpColor: "rgba(0,255,157,0.7)", wickDownColor: "rgba(255,42,95,0.7)"
+  });
+  ihsgCandle.setData(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c })));
+
+  const e21 = (ihsgData.chart.ema21 || []).filter(x => x.t >= minT);
+  if (e21.length) {
+    ihsgE21 = ihsgChart.addLineSeries({ color: "#00e5ff", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    ihsgE21.setData(e21.map(x => ({ time: x.t, value: x.v })));
+  }
+  const e50 = (ihsgData.chart.ema50 || []).filter(x => x.t >= minT);
+  if (e50.length) {
+    ihsgE50 = ihsgChart.addLineSeries({ color: "#b537f2", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    ihsgE50.setData(e50.map(x => ({ time: x.t, value: x.v })));
+  }
+
+  const addLine = (price, color, title, style) => {
+    if (!price || isNaN(price)) return;
+    ihsgCandle.createPriceLine({
+      price: Number(price), color: color, lineWidth: 1,
+      lineStyle: style === undefined ? 2 : style, axisLabelVisible: true, title: title
+    });
+  };
+  (ihsgData.levels || []).slice(0, 4).forEach(l => {
+    addLine(l.price, "rgba(139,155,180,0.5)", (l.type === "SUPPORT" ? "S" : "R") + " " + l.touches + "×", 3);
+  });
+  addLine(ihsgData.support, "rgba(0,255,157,0.7)", "Sup", 2);
+  addLine(ihsgData.resistance, "rgba(255,42,95,0.7)", "Res", 2);
+
+  ihsgChart.timeScale().fitContent();
+}
+
+function resizeOne(c, boxId) {
+  if (!c) return;
+  const box = $(boxId);
+  if (!box || !box.clientWidth) return;
+  try { c.applyOptions({ width: box.clientWidth }); } catch (e) {}
+}
+window.addEventListener("resize", () => {
+  resizeOne(ihsgChart, "ihsgChart");
+  resizeOne(chart, "chartBox");
+});
+
+// =====================================================================
+// SEKTOR
+// =====================================================================
+async function loadSectorStrength() {
+  const box = $("sectorBox");
+  try {
+    const d = await api("getSectorStrength", {}, 20000);
+    const data = d.data || {};
+    const rows = Object.keys(data).map(k => Object.assign({ name: k }, data[k]));
+    if (!rows.length) { box.innerHTML = '<div class="empty">Belum ada data. EOD Scan belum pernah selesai.</div>'; return; }
+    rows.sort((a, b) => (b.relative || 0) - (a.relative || 0));
+    const max = Math.max(4, ...rows.map(r => Math.abs(r.relative || 0)));
+    box.innerHTML = rows.map(r => {
+      const rel = r.relative || 0;
+      const w = Math.min(50, Math.abs(rel) / max * 50);
+      const pos = rel >= 0;
+      return '<div class="sec-row">' +
+        '<div class="sec-name">' + esc(r.name) + '</div>' +
+        '<div class="sec-bar"><i style="' + (pos ? 'left:50%;' : 'right:50%;') + 'width:' + w + '%;background:' + (pos ? 'var(--green)' : 'var(--red)') + ';"></i></div>' +
+        '<div class="sec-val" style="color:' + (pos ? 'var(--green)' : 'var(--red)') + '">' + (pos ? '+' : '') + rel + '%</div>' +
+        '</div>';
+    }).join("") +
+    '<div class="disclaimer" style="text-align:left;">ROC20 sektor dikurangi ROC20 IHSG. Positif = mengungguli pasar.</div>';
+  } catch (e) {
+    box.innerHTML = '<div class="empty">Gagal memuat sektor.</div>';
+  }
+}
+
+// =====================================================================
+// RADAR
+// =====================================================================
+function statusClass(s) {
+  if (s === "BUY_ZONE") return "buy";
+  if (s === "AVOID") return "avoid";
+  return "wait";
+}
+
+async function loadRadar() {
+  const box = $("radarList");
+  try {
+    const d = await api("radar", {}, 25000);
+    const list = d.data || [];
+    if (!list.length) {
+      box.innerHTML = '<div class="empty">Radar kosong.' +
+        (d.running ? ' EOD Scan sedang berjalan (' + d.progress.done + '/' + d.progress.total + ').' : ' Jalankan testEOD() di editor Apps Script.') +
+        '</div>';
+    } else {
+      box.innerHTML = list.map(r => {
+        const cls = statusClass(r.entryStatus);
+        return '<div class="radar-card ' + cls + '" onclick="openTicker(\'' + esc(r.ticker) + '\')">' +
+          '<div class="radar-top">' +
+            '<div class="ticker">' + esc(r.ticker) + '</div>' +
+            '<div style="display:flex;gap:6px;align-items:center;">' +
+              '<span class="badge badge-' + esc(r.grade) + '">' + esc(r.grade) + '</span>' +
+              '<span style="font-family:\'JetBrains Mono\',monospace;font-size:13px;font-weight:700;">' + fmt(r.price) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="tagrow">' +
+            '<span class="setup-tag">' + esc(r.setup) + '</span>' +
+            '<span class="bandar-tag ' + (cls === 'buy' ? 'acc' : cls === 'avoid' ? 'dist' : 'unknown') + '">' + esc(r.entryLabel || r.entryStatus) + '</span>' +
+          '</div>' +
+          '<div style="font-size:11.5px;color:#aab8cc;line-height:1.45;margin-bottom:7px;">' + esc(r.entryReason || "") + '</div>' +
+          '<div class="meta">' +
+            '<span>TQ <b>' + r.tradeQuality + '</b></span>' +
+            '<span>RR <b>' + r.rr + '</b></span>' +
+            '<span>RSI <b>' + r.rsi + '</b></span>' +
+            '<span>' + esc(r.sector) + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join("");
     }
+    const st = d.stats || {};
+    $("radarMeta").textContent = "Diperbarui: " + (d.updatedAt ? new Date(d.updatedAt).toLocaleString("id-ID") : "-") +
+      (st.ok ? " · " + st.ok + " ok / " + st.fail + " gagal dari " + st.total : "");
+  } catch (e) {
+    box.innerHTML = '<div class="empty">Gagal memuat radar.</div>';
+  }
+}
 
-    // --- TAB AUTH LOGIC ---
-    function switchAuthTab(tab) {
-        let msg = document.getElementById("authMessage"); msg.style.display = "none";
-        if (tab === 'login') {
-            document.getElementById('formLogin').style.display = 'block'; document.getElementById('formRegister').style.display = 'none';
-            document.getElementById('tabLogin').style.color = 'var(--neon-cyan)'; document.getElementById('tabLogin').style.borderBottom = '2px solid var(--neon-cyan)';
-            document.getElementById('tabRegister').style.color = 'var(--text-muted)'; document.getElementById('tabRegister').style.borderBottom = '2px solid transparent';
-        } else {
-            document.getElementById('formLogin').style.display = 'none'; document.getElementById('formRegister').style.display = 'block';
-            document.getElementById('tabRegister').style.color = 'var(--neon-cyan)'; document.getElementById('tabRegister').style.borderBottom = '2px solid var(--neon-cyan)';
-            document.getElementById('tabLogin').style.color = 'var(--text-muted)'; document.getElementById('tabLogin').style.borderBottom = '2px solid transparent';
-        }
+// =====================================================================
+// DEEP SCAN
+// =====================================================================
+async function runDeepScan() {
+  const btn = $("btnDeepScan");
+  btn.disabled = true;
+  btn.textContent = "Memulai...";
+  $("deepProgWrap").style.display = "block";
+  try {
+    const d = await api("deepScan", {}, 170000);
+    if (d.status === "error") {
+      $("deepStatus").textContent = d.message;
+      toast(d.message);
+      btn.disabled = false;
+      btn.textContent = "⚡ Deep Scan Top 15 + Broksum";
+      return;
     }
+    if (d.note) toast(d.note);
+    startDeepPoll();
+  } catch (e) {
+    $("deepStatus").textContent = "Permintaan timeout, tapi job kemungkinan tetap jalan di background.";
+    startDeepPoll();
+  }
+}
 
-    async function doLogin() {
-        let id = document.getElementById("loginId").value.trim(), pass = document.getElementById("loginPass").value.trim();
-        let btn = document.getElementById("btnLogin"), msg = document.getElementById("authMessage");
-        
-        if(!id || !pass) { msg.innerText = "Isi Username dan Password!"; msg.style.color = "var(--skip)"; msg.style.display = "block"; return; }
-        
-        btn.innerText = "MEMVERIFIKASI..."; btn.disabled = true; msg.style.display = "none";
-        try {
-            let res = await fetchWithTimeout(`${GAS_URL}?action=auth&type=login&login_id=${encodeURIComponent(id)}&password=${encodeURIComponent(pass)}`, { timeout: 15000 });
-            let data = await res.json();
-            if(data.status === "success") { 
-                localStorage.setItem("gacor_user", JSON.stringify(data)); 
-                checkAuth(); 
-            } else { 
-                msg.innerText = data.message; msg.style.color = "var(--skip)"; msg.style.display = "block"; 
-            }
-        } catch (e) { 
-            let errText = e.name === 'AbortError' ? "Timeout: Server penuh, coba lagi." : "Gagal terhubung ke server.";
-            msg.innerText = errText; msg.style.color = "var(--skip)"; msg.style.display = "block"; 
-        } finally {
-            btn.innerText = "MASUK SISTEM"; btn.disabled = false;
-        }
+function startDeepPoll() {
+  clearInterval(deepPoll);
+  deepPoll = setInterval(checkDeepStatus, 6000);
+  checkDeepStatus();
+}
+
+async function checkDeepStatus(silent) {
+  try {
+    const s = await api("deepScanStatus", {}, 20000);
+    const btn = $("btnDeepScan");
+    if (s.jobStatus === "RUNNING") {
+      $("deepProgWrap").style.display = "block";
+      $("deepProg").style.width = (s.pct || 0) + "%";
+      $("deepStatus").textContent = "Berjalan " + s.done + "/" + s.total +
+        " · ok " + s.ok + " · gagal " + s.fail + (s.current ? " · sedang: " + s.current : "");
+      if (btn) { btn.disabled = true; btn.textContent = "Deep Scan berjalan (" + (s.pct || 0) + "%)"; }
+      if (!deepPoll) startDeepPoll();
+      return;
     }
+    clearInterval(deepPoll);
+    deepPoll = null;
+    if (btn) { btn.disabled = false; btn.textContent = "⚡ Deep Scan Top 15 + Broksum"; }
+    $("deepProgWrap").style.display = "none";
+    const c = s.counts || {};
+    $("deepStatus").textContent = s.lastRun
+      ? ("Terakhir: " + new Date(s.lastRun).toLocaleString("id-ID") +
+         " · Akum " + (c.accumulation || 0) + " · Dist " + (c.distribution || 0) + " · Premium " + (c.premium || 0))
+      : "Belum pernah dijalankan.";
+    if (!silent) { loadBandarPulse(); loadRadar(); }
+  } catch (e) { /* diam */ }
+}
 
-    async function doRegister() {
-        let user = document.getElementById("regId").value.trim(), pass1 = document.getElementById("regPass").value.trim(), pass2 = document.getElementById("regPass2").value.trim();
-        let btn = document.getElementById("btnRegister"), msg = document.getElementById("authMessage");
+// =====================================================================
+// BANDAR LIST
+// =====================================================================
+async function loadBandarPulse() {
+  const box = $("bandarPulse");
+  try {
+    const d = await api("getBandarPulse", {}, 20000);
+    const acc = d.accumulation || [], dist = d.distribution || [];
+    if (!acc.length && !dist.length) { box.innerHTML = '<div class="empty">Belum ada hasil Deep Scan.</div>'; return; }
+    const mini = (arr, label, color) =>
+      '<div style="font-size:10px;font-weight:800;letter-spacing:1px;color:' + color + ';margin:4px 0 6px;">' + label + '</div>' +
+      (arr.length ? arr.map(x =>
+        '<div class="row" style="cursor:pointer;" onclick="openTicker(\'' + esc(x.ticker) + '\')">' +
+          '<span style="color:#e2e8f0;font-weight:700;font-family:\'JetBrains Mono\',monospace;">' + esc(x.ticker) + '</span>' +
+          '<b>' + (x.imbalancePct >= 0 ? "+" : "") + x.imbalancePct + '% · TQ ' + x.tradeQuality + '</b>' +
+        '</div>').join("") : '<div class="loading-inline">—</div>');
+    box.innerHTML = mini(acc, "AKUMULASI", "var(--green)") + mini(dist, "DISTRIBUSI", "var(--red)") +
+      '<div class="disclaimer" style="text-align:left;">Imbalance = (beli − jual) ÷ total lot broker. Diperbarui ' +
+      (d.updatedAt ? new Date(d.updatedAt).toLocaleString("id-ID") : "-") + '.</div>';
+  } catch (e) {
+    box.innerHTML = '<div class="empty">Gagal memuat Bandar Pulse.</div>';
+  }
+}
 
-        if(!user || !pass1) { msg.innerText = "Isi semua data!"; msg.style.color = "var(--skip)"; msg.style.display = "block"; return; }
-        if(pass1 !== pass2) { msg.innerText = "Konfirmasi Password tidak cocok!"; msg.style.color = "var(--skip)"; msg.style.display = "block"; return; }
-        if(user.length < 4) { msg.innerText = "Username minimal 4 karakter!"; msg.style.color = "var(--skip)"; msg.style.display = "block"; return; }
+function loadAccumulation() { loadList("getAccumulation", "accumList"); }
+function loadDistribution() { loadList("getDistribution", "distList"); }
+function loadPremium()      { loadList("getPremiumWatchlist", "premiumList"); }
 
-        btn.innerText = "MEMPROSES..."; btn.disabled = true; msg.style.display = "none";
-        try {
-            let res = await fetchWithTimeout(`${GAS_URL}?action=auth&type=register&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass1)}`, { timeout: 15000 });
-            let data = await res.json();
-            if(data.status === "success") { 
-                msg.innerText = data.message; msg.style.color = "var(--buy)"; msg.style.display = "block"; 
-                setTimeout(() => switchAuthTab('login'), 2000); 
-            } else { 
-                msg.innerText = data.message; msg.style.color = "var(--skip)"; msg.style.display = "block"; 
-            }
-        } catch (e) { 
-            let errText = e.name === 'AbortError' ? "Timeout pendaftaran, coba lagi." : "Gagal terhubung ke server.";
-            msg.innerText = errText; msg.style.color = "var(--skip)"; msg.style.display = "block"; 
-        } finally {
-            btn.innerText = "BUAT AKUN"; btn.disabled = false;
-        }
+async function loadList(action, boxId) {
+  const box = $(boxId);
+  box.innerHTML = '<div class="loading-inline">Memuat...</div>';
+  try {
+    const d = await api(action, {}, 25000);
+    const list = d.data || [];
+    if (!list.length) { box.innerHTML = '<div class="empty">' + esc(d.note || "Belum ada data.") + '</div>'; return; }
+    box.innerHTML = list.map(x => {
+      const cls = statusClass(x.entryStatus);
+      const bcls = String(x.bandarStatus).indexOf("AKUMULASI") === 0 ? "acc"
+                 : String(x.bandarStatus).indexOf("DISTRIBUSI") === 0 ? "dist" : "unknown";
+      return '<div class="bandar-card ' + cls + '" onclick="openTicker(\'' + esc(x.ticker) + '\')">' +
+        '<div class="radar-top">' +
+          '<div class="ticker">' + esc(x.ticker) + '</div>' +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            '<span class="badge badge-' + esc(x.grade) + '">' + esc(x.grade) + '</span>' +
+            '<span style="font-family:\'JetBrains Mono\',monospace;font-size:13px;font-weight:700;">' + fmt(x.price) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tagrow">' +
+          '<span class="bandar-tag ' + bcls + '">' + esc(x.bandarStatus) + ' ' + (x.imbalancePct >= 0 ? "+" : "") + x.imbalancePct + '%</span>' +
+          '<span class="setup-tag">' + esc(x.entryLabel || x.entryStatus) + '</span>' +
+        '</div>' +
+        '<div style="font-size:11.5px;color:#aab8cc;line-height:1.45;margin-bottom:7px;">' + esc(x.entryReason || "") + '</div>' +
+        '<div class="meta">' +
+          '<span>TQ <b>' + x.tradeQuality + '</b></span>' +
+          '<span>RR <b>' + x.rr1 + '</b></span>' +
+          '<span>Zona <b>' + fmt(x.entryLow) + '-' + fmt(x.entryHigh) + '</b></span>' +
+          '<span>Top5 <b>' + x.top5BuyShare + '%</b></span>' +
+        '</div>' +
+      '</div>';
+    }).join("") +
+    '<div class="disclaimer">Diperbarui: ' + (d.updatedAt ? new Date(d.updatedAt).toLocaleString("id-ID") : "-") + '</div>';
+  } catch (e) {
+    box.innerHTML = '<div class="empty">Gagal memuat data.</div>';
+  }
+}
+  </script>
+  <script>
+// =====================================================================
+// TAB HASIL
+// =====================================================================
+function switchResTab(el) {
+  document.querySelectorAll(".res-tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".res-panel").forEach(p => p.classList.remove("active"));
+  el.classList.add("active");
+  const id = el.getAttribute("data-panel");
+  const panel = $(id);
+  if (panel) panel.classList.add("active");
+  // chart baru digambar saat tab-nya dibuka (container harus punya lebar)
+  if (id === "panelChart" && lastResult) {
+    if (chartDirty) renderChart(lastResult);
+    else setTimeout(() => resizeOne(chart, "chartBox"), 50);
+  }
+}
+
+function gotoTab(panelId) {
+  const el = document.querySelector('.res-tab[data-panel="' + panelId + '"]');
+  if (el) switchResTab(el);
+}
+
+function resetTabs() {
+  document.querySelectorAll(".res-tab").forEach((t, i) => t.classList.toggle("active", i === 0));
+  document.querySelectorAll(".res-panel").forEach((p, i) => p.classList.toggle("active", i === 0));
+}
+
+// =====================================================================
+// BUKA SAHAM — cache dulu (gratis), baru scan (potong kuota)
+// =====================================================================
+async function openTicker(t) {
+  showView("viewResult");
+  prepResult(t);
+  try {
+    const c = await api("getScanCached", { ticker: t }, 25000);
+    if (c.status === "success" && c.data) {
+      renderResult(c.data, c.source === "deepScan" ? "Deep Scan (GOAPI)" : "Cache");
+      return;
     }
+  } catch (e) { /* lanjut scan */ }
+  analyzeTicker(t);
+}
 
-    function doLogout() { localStorage.removeItem("gacor_user"); checkAuth(); }
+function prepResult(t) {
+  $("resTicker").textContent = String(t || "").toUpperCase().replace(".JK", "");
+  $("resSetupLine").textContent = "Memuat...";
+  $("statusTitle").textContent = "MENGHITUNG";
+  $("statusReason").textContent = "Mengambil data harga dan menghitung level...";
+  $("statusPos").textContent = "-";
+  $("statusTrigger").textContent = "-";
+  $("statusInvalid").textContent = "-";
+  $("statusCard").className = "status-card wait";
+  $("dataModeBox").style.display = "none";
+  $("anaContent").innerHTML = '<div class="empty">Tekan tombol di bawah untuk menyusun analisa.</div>';
+  $("anaSrc").textContent = "";
+  chartDirty = true;
+  resetTabs();
+}
 
-    function setupDashboard(data) {
-        document.getElementById("uiUsername").innerText = data.username;
-        document.getElementById("uiAvatar").innerText = data.username.charAt(0).toUpperCase();
-        document.getElementById("uiSaldo").innerText = "Rp " + data.saldo.toLocaleString('id-ID');
-        document.getElementById("uiKuota").innerText = data.kuota;
-        if (data.role === "ADMIN") { 
-            document.getElementById("uiRoleBadge").style.display = "inline-block"; 
-            document.getElementById("btnUpdateRadar").style.display = "block"; 
-        } else { 
-            document.getElementById("uiRoleBadge").style.display = "none"; 
-            document.getElementById("btnUpdateRadar").style.display = "none"; 
-        }
+async function analyzeTicker(prefill, usePremium) {
+  const t = (prefill || $("tickerInput").value || "").trim().toUpperCase().replace(".JK", "");
+  if (!t) return toast("Isi kode saham dulu.");
+  showView("viewResult");
+  prepResult(t);
+  try {
+    const d = await api("scan", { ticker: t, usePremium: !!usePremium, force: !!usePremium }, 90000);
+    if (d.status !== "success") {
+      $("statusTitle").textContent = "GAGAL";
+      $("statusCard").className = "status-card avoid";
+      $("statusReason").textContent = d.message || "Tidak bisa menganalisa saham ini.";
+      return;
     }
+    renderResult(d.data, d.cached ? "Cache" : (d.dataSource || "Yahoo Finance"));
+    if (!d.cached && d.charged) toast("Kuota terpakai 1. Sisa: " + (d.remaining < 0 ? "∞" : d.remaining));
+  } catch (e) {
+    $("statusTitle").textContent = "TIMEOUT";
+    $("statusCard").className = "status-card avoid";
+    $("statusReason").textContent = "Server tidak merespons tepat waktu. Coba lagi.";
+  }
+}
 
-    function navTo(pageId, navElement) {
-        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('view-active'));
-        document.getElementById(pageId).classList.add('view-active');
-        if(navElement) { 
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
-            navElement.classList.add('active'); 
-        }
-        window.scrollTo(0,0);
-        if(pageId === 'watchlistPage') loadTop10();
+// =====================================================================
+// RENDER HASIL
+// =====================================================================
+function renderResult(d, sourceLabel) {
+  lastResult = d;
+  chatCtx = d.ticker;
+  chartDirty = true;
+
+  $("resTicker").textContent = d.ticker;
+  $("resSetupLine").textContent = d.setup + " · data " + d.barDate + " · " + d.sector;
+
+  if (d.dataMode === "INTRADAY_PARTIAL") {
+    $("dataModeBox").style.display = "block";
+    $("dataModeBox").textContent = "⚠ Candle hari ini belum tutup. RVOL dipakai versi proyeksi (" +
+      (d.indicators.rvolProjected || "-") + "×) dan breakout belum final. Angka bisa berubah saat closing.";
+  }
+
+  // ---- status entry ----
+  const e = d.entry;
+  $("statusCard").className = "status-card " + statusClass(e.status);
+  $("statusTitle").textContent = e.label;
+  $("statusReason").textContent = e.reason;
+  $("statusPos").textContent = e.positionVsZone;
+  $("statusTrigger").textContent = d.plan.trigger;
+  $("statusInvalid").textContent = d.plan.invalidation;
+
+  // ---- skor + rencana ----
+  $("resTQ").textContent = d.tradeQuality;
+  $("resTQ").style.color = d.tradeQuality >= 75 ? "var(--green)" : d.tradeQuality >= 60 ? "var(--cyan)" : d.tradeQuality >= 52 ? "var(--yellow)" : "var(--red)";
+  $("resGrade").textContent = "GRADE " + d.grade;
+  $("resGrade").className = "badge badge-" + d.grade;
+  $("resSetupTag").textContent = d.setup;
+  const bs = String(d.bandarStatus || "UNKNOWN");
+  $("resBandarTag").textContent = bs;
+  $("resBandarTag").className = "bandar-tag " + (bs.indexOf("AKUMULASI") === 0 ? "acc" : bs.indexOf("DISTRIBUSI") === 0 ? "dist" : "unknown");
+  $("resScore").textContent = d.technicalScore + "/90";
+  $("resPrice").textContent = fmt(d.indicators.price) + " (" + (d.indicators.changePct >= 0 ? "+" : "") + d.indicators.changePct + "%)";
+  $("resSource").textContent = sourceLabel || "-";
+
+  const p = d.plan;
+  $("resEntry").textContent = fmt(p.entryLow) + " — " + fmt(p.entryHigh);
+  $("resAnchor").textContent = "Acuan: " + (e.anchorName || "-");
+  $("resSL").textContent = fmt(p.sl);
+  $("resRiskPct").textContent = "Risiko " + p.riskPct + "% dari entry atas";
+  $("resTP").textContent = "TP1 " + fmt(p.tp1) + "  ·  TP2 " + fmt(p.tp2);
+  $("resTPSrc").textContent = p.tp1Source + (p.tpSynthetic ? " ⚠" : "");
+  $("resRR").textContent = p.rr1;
+  $("resRR").style.color = p.rr1 >= 2 ? "var(--green)" : p.rr1 >= 1.5 ? "var(--cyan)" : "var(--red)";
+  $("resRRNow").textContent = (p.rrNow === null || p.rrNow === undefined) ? "— (harga belum di zona)" : p.rrNow;
+
+  renderSrGrid(d);
+  renderConfirm(d);
+  renderGates(d);
+  renderTA(d);
+  renderSmartMoney(d);
+  calcLot();
+}
+
+// ---- Support / Resistance (grid + klaster) ----
+function renderSrGrid(d) {
+  const k = d.keyLevels || {};
+  $("resNSup").textContent = fmt(k.nearestSupport);
+  $("resNRes").textContent = fmt(k.nearestResistance);
+  $("resSwL").textContent  = fmt(k.swingLow);
+  $("resSwH").textContent  = fmt(k.swingHigh);
+  $("resDSup").textContent = fmt(k.dynamicSupport);
+  $("resDRes").textContent = fmt(k.dynamicResistance);
+  $("resFSup").textContent = fmt(k.fibSupport);
+  $("resFRes").textContent = fmt(k.fibResistance);
+
+  const levels = d.levels || [];
+  if (levels.length) {
+    $("resLevelsList").innerHTML = "<b style='color:#e2e8f0'>Klaster level:</b> " +
+      levels.slice(0, 10).map(l => {
+        const c = l.type === "SUPPORT" ? "var(--green)" : l.type === "RESISTANCE" ? "#ff8aa8" : "var(--yellow)";
+        return '<span style="color:' + c + '">' + fmt(l.price) + '</span> (' + esc(l.type) +
+               ', s' + l.strength + ', ' + (l.distPct >= 0 ? "+" : "") + l.distPct + '%)';
+      }).join(" · ");
+  } else {
+    $("resLevelsList").textContent = "Tidak ada klaster level yang cukup kuat.";
+  }
+}
+
+// ---- Konfirmasi ----
+function renderConfirm(d) {
+  const es = d.entry.status;
+  const bs = String(d.bandarStatus || "UNKNOWN");
+  const rr = d.plan.rr1;
+  const mk = (d.market && d.market.regime) || "-";
+
+  const rows = [
+    [es === "BUY_ZONE" ? "ok" : "wait", "Entry: " + (d.entry.label || es)],
+    [d.setup !== "NO_SETUP" ? "ok" : "wait", "Setup: " + d.setup],
+    [rr >= 1.5 ? "ok" : "no", "RR ≥ 1.5 (" + rr + ")"],
+    [bs.indexOf("AKUMULASI") === 0 ? "ok" : bs.indexOf("DISTRIBUSI") === 0 ? "no" : "wait", "Bandar: " + bs.replace(/_/g, " ")],
+    [mk === "BULLISH" ? "ok" : mk === "BEARISH" ? "no" : "wait", "Market: " + mk],
+    [d.liquidity.avgTurnover20 >= 1e9 ? "ok" : "no", "Likuiditas: " + fmtRp(d.liquidity.avgTurnover20) + "/hari"]
+  ];
+
+  $("resConfirm").innerHTML = rows.map(r => {
+    const sym = r[0] === "ok" ? "✓" : r[0] === "no" ? "✗" : "○";
+    const cls = r[0] === "ok" ? "ok" : r[0] === "no" ? "no" : "";
+    return '<div class="' + cls + '">' + sym + " " + esc(r[1]) + '</div>';
+  }).join("") +
+  '<div class="last">Grade ' + esc(d.grade) + " · TQ " + d.tradeQuality + '</div>';
+}
+
+// ---- Gate ----
+function renderGates(d) {
+  const gates = d.gates || [];
+  if (!gates.length) {
+    $("gateCount").textContent = "(0)";
+    $("gateList").innerHTML = '<div class="gate-item"><span class="gate-code clear">CLEAR</span>' +
+      '<span class="gate-text">Tidak ada gate yang menyala.</span></div>';
+    return;
+  }
+  const soft = { TP_SYNTHETIC: 1, DATA_PARTIAL: 1, RSI_EXTREME: 1 };
+  $("gateCount").textContent = "(" + gates.length + ")";
+  $("gateList").innerHTML = gates.map(g =>
+    '<div class="gate-item">' +
+      '<span class="gate-code' + (soft[g.code] ? " soft" : "") + '">' + esc(g.code) + '</span>' +
+      '<span class="gate-text">' + esc(g.text) + '</span>' +
+    '</div>').join("");
+}
+
+// ---- TA panel ----
+function renderTA(d) {
+  const i = d.indicators;
+  $("resArah").textContent = i.arahDominan;
+  $("resStruct").textContent = i.structure;
+  $("resCross").textContent = i.crossAlign;
+  $("resEMA").textContent = fmt(i.ema21) + " / " + fmt(i.ema50) + " / " + fmt(i.ema99);
+  $("resMACD").textContent = i.macdState;
+  $("resRSI").textContent = i.rsi;
+  $("resADX").textContent = i.adx + (i.adx >= 25 ? " (tren kuat)" : i.adx >= 18 ? " (sedang)" : " (lemah)");
+  $("resATR").textContent = i.atr + " (" + i.atrPct + "%)";
+  $("resRvol").textContent = i.rvol + "×" + (i.rvolProjected ? " (proy " + i.rvolProjected + "×)" : "");
+  $("resRS").textContent = (d.relativeStrength.vsIHSG20 >= 0 ? "+" : "") + d.relativeStrength.vsIHSG20 + "%";
+  $("resRS").style.color = d.relativeStrength.vsIHSG20 >= 0 ? "var(--green)" : "var(--red)";
+  $("resLiq").textContent = fmtRp(d.liquidity.avgTurnover20);
+  $("resSector").textContent = d.sector;
+  $("resRegime").textContent = d.market.regime;
+
+  const sd = d.scoreDetails;
+  const parts = [
+    ["Struktur (HH/HL)", sd.structure, 20],
+    ["Tren EMA", sd.emaTrend, 15],
+    ["MACD / momentum", sd.macd, 10],
+    ["Fibonacci", sd.fibonacci, 10],
+    ["Lokasi vs S/R", sd.location, 10],
+    ["S/R dinamis (EMA)", sd.dynamicSR, 10],
+    ["Volume", sd.momVolume, 15]
+  ];
+  $("scoreBreak").innerHTML = parts.map(x =>
+    '<div class="bd">' +
+      '<div class="bd-name">' + x[0] + '</div>' +
+      '<div class="bd-bar"><i style="width:' + Math.round((x[1] / x[2]) * 100) + '%"></i></div>' +
+      '<div class="bd-val">' + x[1] + '/' + x[2] + '</div>' +
+    '</div>').join("");
+}
+
+// ---- Smart money panel ----
+function renderSmartMoney(d) {
+  const b = d.bandar || {};
+  const box = $("broksumInner");
+  if (!b.status || b.status === "UNKNOWN") {
+    box.innerHTML = '<div class="empty">Broker summary belum tersedia untuk saham ini.<br>' +
+      'Jalankan Deep Scan (Admin) atau Validasi Premium agar data GOAPI terambil.</div>';
+    return;
+  }
+  const buy = (b.topBuyers || []).map(x => x.code + " +" + fmt(x.net)).join(" · ") || "-";
+  const sell = (b.topSellers || []).map(x => x.code + " −" + fmt(x.net)).join(" · ") || "-";
+  box.innerHTML =
+    '<div class="row"><span>Status</span><b style="color:' +
+      (String(b.status).indexOf("AKUMULASI") === 0 ? "var(--green)" : String(b.status).indexOf("DISTRIBUSI") === 0 ? "var(--red)" : "var(--muted)") +
+      '">' + esc(b.status) + '</b></div>' +
+    '<div class="row"><span>Imbalance (beli−jual)</span><b style="color:' + (b.imbalancePct >= 0 ? "var(--green)" : "var(--red)") + '">' +
+      (b.imbalancePct >= 0 ? "+" : "") + b.imbalancePct + '%</b></div>' +
+    '<div class="row"><span>Net lot</span><b>' + fmt(b.netLot) + ' (' + b.netPct + '% vol harian)</b></div>' +
+    '<div class="row"><span>Top-5 pembeli</span><b>' + b.top5BuyShare + '% sisi beli</b></div>' +
+    '<div class="row"><span>Skor bandar</span><b>' + b.score + '/100</b></div>' +
+    '<div class="row"><span>Tanggal data</span><b>' + esc(b.date || "-") + '</b></div>' +
+    '<div style="margin-top:12px;font-size:11.5px;line-height:1.7;color:var(--muted);">' +
+      '<b style="color:var(--green)">Top beli:</b> ' + esc(buy) + '<br>' +
+      '<b style="color:var(--red)">Top jual:</b> ' + esc(sell) + '</div>' +
+    '<div class="disclaimer" style="text-align:left;">Ambang akumulasi/distribusi memakai persentase imbalance, bukan lot absolut — jadi saham kecil dan besar dinilai adil.</div>';
+}
+
+// =====================================================================
+// CHART SAHAM (digambar saat tab Chart dibuka)
+// =====================================================================
+function renderChart(d) {
+  const box = $("chartBox");
+  if (!window.LightweightCharts) {
+    box.innerHTML = '<div class="empty">Library chart gagal dimuat. Cek koneksi ke unpkg.com.</div>';
+    return;
+  }
+  const bars = (d.chart && d.chart.bars) || [];
+  if (!bars.length) { box.innerHTML = '<div class="empty">Data chart tidak tersedia.</div>'; return; }
+
+  if (chart) { try { chart.remove(); } catch (err) {} chart = null; }
+  box.innerHTML = "";
+
+  chart = LightweightCharts.createChart(box, {
+    width: box.clientWidth || 340,
+    height: 300,
+    layout: { background: { color: "#070b14" }, textColor: "#8b9bb4", fontSize: 10 },
+    grid: { vertLines: { color: "rgba(255,255,255,0.035)" }, horzLines: { color: "rgba(255,255,255,0.035)" } },
+    rightPriceScale: { borderColor: "rgba(255,255,255,0.08)", scaleMargins: { top: 0.12, bottom: 0.24 } },
+    timeScale: { borderColor: "rgba(255,255,255,0.08)", rightOffset: 6 },
+    handleScale: { axisPressedMouseMove: false },
+    crosshair: { mode: 0 }
+  });
+
+  candleSeries = chart.addCandlestickSeries({
+    upColor: "#00ff9d", downColor: "#ff2a5f",
+    borderUpColor: "#00ff9d", borderDownColor: "#ff2a5f",
+    wickUpColor: "rgba(0,255,157,0.7)", wickDownColor: "rgba(255,42,95,0.7)"
+  });
+  candleSeries.setData(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c })));
+
+  volSeries = chart.addHistogramSeries({ priceFormat: { type: "volume" }, priceScaleId: "" });
+  volSeries.priceScale().applyOptions({ scaleMargins: { top: 0.84, bottom: 0 } });
+  volSeries.setData(bars.map(b => ({
+    time: b.t, value: b.v,
+    color: b.c >= b.o ? "rgba(0,255,157,0.25)" : "rgba(255,42,95,0.25)"
+  })));
+
+  const line = (price, color, title, style) => {
+    if (!price || isNaN(price)) return;
+    candleSeries.createPriceLine({
+      price: Number(price), color: color, lineWidth: 1,
+      lineStyle: style === undefined ? 2 : style, axisLabelVisible: true, title: title
+    });
+  };
+  (d.levels || []).slice(0, 6).forEach(x =>
+    line(x.price, "rgba(139,155,180,0.5)", (x.type === "SUPPORT" ? "S" : "R") + " " + x.touches + "×", 3));
+  const p = d.plan;
+  line(p.entryLow, "#00e5ff", "Entry ↓", 2);
+  line(p.entryHigh, "#00e5ff", "Entry ↑", 2);
+  line(p.sl, "#ff2a5f", "SL", 0);
+  line(p.tp1, "#00ff9d", "TP1", 0);
+  line(p.tp2, "rgba(0,255,157,0.6)", "TP2", 2);
+
+  chart.timeScale().fitContent();
+  chartDirty = false;
+}
+
+// =====================================================================
+// ANALISA TELITI
+// =====================================================================
+async function loadAnalisa(refresh) {
+  if (!lastResult) return toast("Buka analisa saham dulu.");
+  const btn = $("btnAnalisa");
+  btn.disabled = true;
+  btn.textContent = "Menyusun...";
+  $("anaContent").innerHTML = '<div class="loading-inline">Menyusun analisa...</div>';
+  try {
+    const d = await api("analyze", { ticker: lastResult.ticker, refresh: !!refresh }, 90000);
+    if (d.status !== "success") {
+      $("anaContent").innerHTML = '<div class="empty">' + esc(d.message || "Gagal menyusun analisa.") + '</div>';
+      return;
     }
-    
-    function openTopupModal() { document.getElementById("topupModal").style.display = "flex"; }
-    function closeTopupModal() { document.getElementById("topupModal").style.display = "none"; }
-    function scanFromHome() { 
-        let val = document.getElementById('homeSearchInput').value.trim(); 
-        if(!val) return; 
-        if(val.length <= 4 && !val.includes(" ")) { 
-            navTo('scannerPage', document.querySelectorAll('.nav-item')[2]); 
-            document.getElementById('tickerInput').value = val; 
-            startEngine(); 
-        } else { 
-            navTo('aiChatPage', document.querySelectorAll('.nav-item')[3]); 
-            document.getElementById('aiChatInput').value = val; 
-            sendGeneralChat(); 
-        } 
+    renderAnalisa(d.narrative, d.cached);
+  } catch (e) {
+    $("anaContent").innerHTML = '<div class="empty">Timeout saat menyusun analisa.</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "↻ Susun Ulang";
+    btn.setAttribute("onclick", "loadAnalisa(true)");
+  }
+}
+
+function renderAnalisa(n, cached) {
+  const blocks = [
+    ["Ringkasan", n.ringkasan],
+    ["Kondisi Tren", n.kondisiTren],
+    ["Kenapa Setup Ini Valid / Tidak", n.setupValid],
+    ["Level Kunci", n.levelKunci],
+    ["Kondisi Batal", n.kondisiBatal],
+    ["Risiko", n.risiko],
+    ["Catatan", n.catatan]
+  ].filter(b => b[1]);
+
+  let html = blocks.map(b =>
+    '<div class="ana-block"><h4>' + esc(b[0]) + '</h4><p>' + esc(b[1]) + '</p></div>').join("");
+
+  if (n.checklist && n.checklist.length) {
+    html += '<div class="ana-block"><h4>Checklist</h4><div class="confirm-list">' +
+      n.checklist.map(c => '<div class="' + (c.ok ? "ok" : "no") + '">' + (c.ok ? "✓" : "✗") + " " +
+        esc(c.label) + ' <span style="color:var(--muted)">· ' + esc(c.note) + '</span></div>').join("") +
+      '</div></div>';
+  }
+  if (n.aiError) {
+    html += '<div class="disclaimer" style="text-align:left;color:var(--yellow);">AI tidak dipakai: ' +
+      esc(n.aiError) + ' — narasi di atas dari mesin aturan.</div>';
+  }
+  $("anaContent").innerHTML = html;
+  $("anaSrc").textContent = (n.source === "ai+rules" ? "AI + aturan" : "mesin aturan") + (cached ? " · cache" : "");
+}
+
+// =====================================================================
+// POSITION SIZE
+// =====================================================================
+function setRisk(r, el) {
+  currentRisk = r;
+  document.querySelectorAll(".risk-btn").forEach(b => b.classList.remove("active"));
+  if (el) el.classList.add("active");
+  calcLot();
+}
+
+function calcLot() {
+  if (!lastResult) return;
+  const cap = Number($("capitalInput").value || 0);
+  const entry = lastResult.plan.entryHigh;
+  const sl = lastResult.plan.sl;
+  const riskShare = entry - sl;
+  if (!cap || riskShare <= 0) {
+    $("resLot").textContent = "-";
+    $("resRiskShare").textContent = "-";
+    $("resPosVal").textContent = "-";
+    return;
+  }
+  const lot = Math.floor((cap * (currentRisk / 100)) / (riskShare * 100));
+  $("resRiskShare").textContent = "Rp" + fmt(Math.round(riskShare));
+  $("resLot").textContent = lot > 0 ? fmt(lot) + " lot" : "modal terlalu kecil";
+  $("resPosVal").textContent = lot > 0 ? fmtRp(lot * 100 * entry) : "-";
+}
+
+async function addToPaperWatch() {
+  if (!lastResult) return;
+  const d = lastResult;
+  try {
+    const r = await api("addWatch", {
+      ticker: d.ticker, setup: d.setup, entryStatus: d.entry.status,
+      entryLow: d.plan.entryLow, entryHigh: d.plan.entryHigh,
+      sl: d.plan.sl, tp1: d.plan.tp1, rr: d.plan.rr1, grade: d.grade
+    }, 20000);
+    toast(r.message || "Tersimpan.");
+  } catch (e) { toast("Gagal menyimpan."); }
+}
+
+// =====================================================================
+// CHAT
+// =====================================================================
+function openChat() {
+  const wrap = $("chatCtxWrap");
+  if (chatCtx) {
+    wrap.innerHTML = '<div class="ctx-chip">Konteks: ' + esc(chatCtx) + ' <button onclick="clearChatCtx()">✕</button></div>';
+  } else {
+    wrap.innerHTML = '<div class="disclaimer" style="text-align:left;margin:0 0 8px;">Belum ada konteks saham. Buka analisa sebuah saham dulu supaya jawaban AI memakai angka yang benar.</div>';
+  }
+}
+function clearChatCtx() { chatCtx = null; openChat(); }
+
+function addBubble(text, cls) {
+  const log = $("chatLog");
+  const div = document.createElement("div");
+  div.className = "bubble " + cls;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  return div;
+}
+
+async function sendChat() {
+  const input = $("chatInput");
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = "";
+  addBubble(msg, "user");
+  const thinking = addBubble("...", "bot");
+  try {
+    const d = await api("chat", { message: msg, ticker: chatCtx || "" }, 60000);
+    if (d.status !== "success") {
+      thinking.className = "bubble err";
+      thinking.textContent = d.message || "AI tidak merespons.";
+      if (d.detail && d.detail.modelDicoba && d.detail.modelDicoba.length) {
+        thinking.textContent += "\n\nModel yang dicoba: " + d.detail.modelDicoba.join(", ");
+      }
+      return;
     }
+    thinking.textContent = d.reply;
+    if (d.chatLimit > 0) $("chatQuotaLbl").textContent = d.chatUsed + "/" + d.chatLimit + " hari ini";
+  } catch (e) {
+    thinking.className = "bubble err";
+    thinking.textContent = "Koneksi timeout.";
+  }
+}
 
-    // --- LOGIKA POTONG KUOTA / SALDO (Diperbaiki dgn Timeout) ---
-    async function deductUserQuota() {
-        let userData = JSON.parse(localStorage.getItem("gacor_user"));
-        if(userData.role === "ADMIN") return true;
-
-        if(userData.kuota <= 0 && userData.saldo < 1000) {
-            alert("Kuota gratis habis & Saldo tidak cukup (Rp 1.000/scan).\nSilakan Topup di menu Komunitas.");
-            openTopupModal(); 
-            return false;
-        }
-
-        if(userData.kuota <= 0 && userData.saldo >= 1000) {
-            let conf = confirm("Kuota gratis Anda habis.\nGunakan Saldo Rp 1.000 untuk aksi ini?");
-            if(!conf) return false;
-        }
-
-        try {
-            let res = await fetchWithTimeout(`${GAS_URL}?action=deduct_quota&username=${encodeURIComponent(userData.username)}&_t=${Date.now()}`, { timeout: 15000 });
-            let data = await res.json();
-            if(data.status === "success") {
-                userData.kuota = data.remaining; userData.saldo = data.saldo;
-                localStorage.setItem("gacor_user", JSON.stringify(userData));
-                document.getElementById("uiKuota").innerText = userData.kuota;
-                document.getElementById("uiSaldo").innerText = "Rp " + userData.saldo.toLocaleString('id-ID');
-                return true;
-            } else {
-                alert(data.message); return false;
-            }
-        } catch (e) {
-            alert(e.name === 'AbortError' ? "Sistem pembayaran timeout, mohon ulangi." : "Gagal terhubung ke server untuk verifikasi kuota.");
-            return false;
-        }
+// =====================================================================
+// OUTLOOK
+// =====================================================================
+async function loadFullOutlook(refresh) {
+  showView("viewOutlook");
+  const box = $("outlookBox");
+  box.innerHTML = '<div class="glass"><div class="loading-inline">Memuat outlook...</div></div>';
+  try {
+    const d = await api("getMarketOutlook", { refresh: !!refresh }, 90000);
+    if (d.status !== "success") {
+      box.innerHTML = '<div class="glass"><div class="empty">' + esc(d.message || "Gagal.") + '</div></div>';
+      return;
     }
-
-    // --- VISION AI: KOMPRESI GAMBAR (Pencegah Hang/Bug Diam) ---
-    let hasImage = false, imageDataUrl = ""; 
-    function handleImage(event) { 
-        const file = event.target.files[0]; 
-        if (!file) return; 
-        
-        // Kompresi agar tidak membuat server Google Apps Script freeze/timeout
-        const reader = new FileReader(); 
-        reader.onload = function(e) { 
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 600; // Resizing ekstrim demi kelancaran GAS
-                let scaleSize = MAX_WIDTH / img.width;
-                if(scaleSize > 1) scaleSize = 1;
-                
-                canvas.width = img.width * scaleSize;
-                canvas.height = img.height * scaleSize;
-                
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                // Konversi menjadi JPEG terkompresi
-                imageDataUrl = canvas.toDataURL('image/jpeg', 0.6); 
-                
-                document.getElementById('imagePreview').src = imageDataUrl; 
-                document.getElementById('previewContainer').style.display = 'inline-block'; 
-                document.getElementById('uploadText').style.display = 'none'; 
-                hasImage = true; 
-            };
-            img.src = e.target.result;
-        }; 
-        reader.readAsDataURL(file); 
+    const o = d.data;
+    let html = "";
+    if (o && o.ringkasan) {
+      const bias = String(o.bias || "NETRAL").toUpperCase();
+      html += '<div class="glass"><span class="bias-pill bias-' + esc(bias) + '">BIAS ' + esc(bias) + '</span>' +
+        '<div class="ana-block"><p>' + esc(o.ringkasan) + '</p></div>';
+      if (o.level) {
+        html += '<div class="row"><span>Support</span><b>' + fmt(o.level.support) + '</b></div>' +
+                '<div class="row"><span>Resistance</span><b>' + fmt(o.level.resistance) + '</b></div>' +
+                (o.level.catatan ? '<div class="plan-desc" style="margin-top:8px;">' + esc(o.level.catatan) + '</div>' : "");
+      }
+      html += '</div>';
+      if (o.breadth || o.sektor) {
+        html += '<div class="glass">' +
+          (o.breadth ? '<div class="ana-block"><h4>Breadth</h4><p>' + esc(o.breadth) + '</p></div>' : "") +
+          (o.sektor ? '<div class="ana-block"><h4>Sektor</h4><p>' + esc(o.sektor) + '</p></div>' : "") + '</div>';
+      }
+      if (o.skenarioA || o.skenarioB) {
+        html += '<div class="glass"><div class="section-label"><span class="grad">●</span> Skenario</div>';
+        [o.skenarioA, o.skenarioB].forEach((s, idx) => {
+          if (!s) return;
+          html += '<div class="scn"><h5>' + (idx === 0 ? "A" : "B") + ". " + esc(s.judul || "-") + '</h5>' +
+            '<p><b style="color:#cbd5e1;">Syarat:</b> ' + esc(s.syarat || "-") + '<br>' +
+            '<b style="color:#cbd5e1;">Implikasi:</b> ' + esc(s.implikasi || "-") + '</p></div>';
+        });
+        html += '</div>';
+      }
+      if (o.implikasiTrading) {
+        html += '<div class="glass"><div class="ana-block"><h4>Implikasi Trading</h4><p>' + esc(o.implikasiTrading) + '</p></div></div>';
+      }
+    } else {
+      html = '<div class="glass"><div style="font-size:13px;line-height:1.7;white-space:pre-wrap;color:#d7e0ee;">' +
+        esc(d.outlook || "-") + '</div></div>';
     }
-    
-    function removeImage(e) { 
-        e.stopPropagation(); 
-        document.getElementById('fileInput').value = ""; 
-        document.getElementById('imagePreview').src = ""; 
-        imageDataUrl = ""; 
-        document.getElementById('previewContainer').style.display = 'none'; 
-        document.getElementById('uploadText').style.display = 'block'; 
-        hasImage = false; 
+    box.innerHTML = html;
+    $("outlookMeta").textContent = "Sumber: " + esc(d.source || "-") + (d.cached ? " · dari cache" : " · baru dihitung");
+  } catch (e) {
+    box.innerHTML = '<div class="glass"><div class="empty">Timeout memuat outlook.</div></div>';
+  }
+}
+
+// =====================================================================
+// PROFIL
+// =====================================================================
+async function loadProfile() {
+  loadMyWatch();
+  try {
+    const m = await api("me", {}, 15000);
+    if (m.status === "success") {
+      $("profUser").textContent = m.username;
+      $("profRole").textContent = m.role;
+      setQuota(m.quota);
     }
+  } catch (e) {}
+}
 
-    // --- ENGINE UTAMA ANALISA (Robust Anti-Freeze) ---
-    async function startEngine() {
-        let ticker = document.getElementById("tickerInput").value.trim().toUpperCase();
-        if (!ticker) return;
+async function loadMyWatch() {
+  const box = $("myWatchList");
+  try {
+    const d = await api("getMyWatchlist", {}, 20000);
+    const list = (d.data || []).filter(x => x.status === "WATCHING");
+    if (!list.length) { box.innerHTML = '<div class="empty">Belum ada setup yang dipantau.</div>'; return; }
+    box.innerHTML = list.reverse().map(x =>
+      '<div class="bandar-card" onclick="openTicker(\'' + esc(x.ticker) + '\')">' +
+        '<div class="radar-top"><div class="ticker">' + esc(x.ticker) + '</div>' +
+        '<span class="badge badge-' + esc(x.grade || "D") + '">' + esc(x.grade || "-") + '</span></div>' +
+        '<div class="meta">' +
+          '<span>Zona <b>' + fmt(x.entryLow) + '-' + fmt(x.entryHigh) + '</b></span>' +
+          '<span>SL <b>' + fmt(x.sl) + '</b></span>' +
+          '<span>TP1 <b>' + fmt(x.tp1) + '</b></span>' +
+          '<span>RR <b>' + esc(x.rr) + '</b></span>' +
+        '</div>' +
+        '<div style="font-size:10px;color:#475569;margin-top:6px;">' + esc(x.setup) + ' · ' +
+        (x.addedAt ? new Date(x.addedAt).toLocaleDateString("id-ID") : "-") + '</div>' +
+      '</div>').join("");
+  } catch (e) {
+    box.innerHTML = '<div class="empty">Gagal memuat watchlist.</div>';
+  }
+}
 
-        let btn = document.getElementById('btnScan');
-        btn.innerText = "MEMERIKSA KUOTA..."; btn.disabled = true;
+async function loadDiag() {
+  const out = $("diagOut");
+  out.textContent = "Mengecek...";
+  try {
+    const d = await api("diagnostics", {}, 30000);
+    if (d.status !== "success") { out.textContent = d.message; return; }
+    const p = d.properties, err = d.lastErrors;
+    out.textContent =
+      "Versi      : " + d.version + "\n" +
+      "Sheet      : " + p.sheetId + "\n" +
+      "HMAC       : " + p.hmac + "\n" +
+      "GOAPI key  : " + p.goapiKey + " (" + p.goapiBase + ")\n" +
+      "Gemini key : " + p.geminiKey + "\n" +
+      "Model aktif: " + p.geminiModelActive + "\n" +
+      "Watchlist  : " + d.watchlistSize + " ticker\n" +
+      "Radar      : " + (d.radar ? d.radar.count + " kartu · " + new Date(d.radar.updatedAt).toLocaleString("id-ID") : "kosong") + "\n" +
+      "Lock EOD   : " + (d.locks.EOD.held ? d.locks.EOD.ageMin + " menit" : "bebas") + "\n" +
+      "Lock DEEP  : " + (d.locks.DEEP.held ? d.locks.DEEP.ageMin + " menit" : "bebas") + "\n" +
+      "Trigger    : " + (d.triggers || []).join(", ") + "\n" +
+      "Error AI   : " + String(err.gemini).slice(0, 180) + "\n" +
+      "Error GOAPI: " + String(err.goapi).slice(0, 180);
+  } catch (e) {
+    out.textContent = "Gagal menjalankan diagnostik.";
+  }
+}
 
-        let hasQuota = await deductUserQuota(); 
-        if(!hasQuota) {
-            btn.innerText = "⚡ ANALISA SEKARANG"; btn.disabled = false;
-            return; 
-        }
-
-        document.getElementById("resultBox").style.display = "none";
-        let tb = document.getElementById("trackerBox"); 
-        tb.style.display = "block";
-        btn.innerText = "MEMPROSES AI & TA...";
-        
-        tb.innerHTML = `<div style="font-weight:bold; margin-bottom:10px;">> SYSTEM INITIALIZING...</div><div id="trackerLog"><div>> Menarik Data Bursa & Kalkulasi Algoritma...</div></div>`;
-        
-        let payload = { action: "scan", ticker: ticker };
-        if (hasImage && imageDataUrl) payload.imageData = imageDataUrl;
-
-        try {
-            // Kita beri waktu GAS 30 detik untuk berpikir, lebih dari itu digagalkan agar tidak nge-hang.
-            let response = await fetchWithTimeout(GAS_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                body: JSON.stringify(payload),
-                timeout: 30000 
-            });
-            
-            let result = await response.json();
-            if (result.status === "error") throw new Error(result.message);
-            
-            tb.style.display = "none"; document.getElementById("resultBox").style.display = "block"; 
-
-            let data = result.data, ind = data.indicators, sd = data.scoreDetails;
-            document.getElementById("outTicker").innerText = `$${ticker}`; 
-            
-            let scoreVal = document.getElementById("scoreTotalVal");
-            let scoreBar = document.getElementById("scoreProgressBar");
-            scoreVal.innerText = data.score;
-            scoreBar.style.width = data.score + "%";
-            
-            if (data.score < 50) { scoreVal.style.color = "var(--skip)"; scoreBar.style.background = "var(--skip)"; }
-            else if (data.score < 70) { scoreVal.style.color = "var(--wait)"; scoreBar.style.background = "var(--wait)"; }
-            else { scoreVal.style.color = "var(--buy)"; scoreBar.style.background = "var(--buy)"; }
-
-            document.getElementById("scStruct").innerText = sd.struct;
-            document.getElementById("scEma").innerText = sd.ema;
-            document.getElementById("scMacd").innerText = sd.macd;
-            document.getElementById("scFibo").innerText = sd.fibo;
-            document.getElementById("scClassic").innerText = sd.classic;
-            document.getElementById("scDynamic").innerText = sd.dynamic;
-            document.getElementById("scMom").innerText = sd.mom;
-            document.getElementById("scRr").innerText = sd.rr;
-
-            document.getElementById("v5Price").innerText = ind.price;
-            document.getElementById("v5Arah").innerText = ind.arahDominan;
-            document.getElementById("v5Swing").innerText = ind.strukturSwing;
-            document.getElementById("v5Ema").innerText = `${ind.ema5} / ${ind.ema21}`;
-            document.getElementById("v5Macd").innerText = `${ind.macdStatus} • Hist ${ind.macdValue}`;
-            document.getElementById("v5Cross").innerText = ind.crossStatus;
-            
-            document.getElementById("v5Classic").innerText = `${ind.swingLow} / ${ind.swingHigh}`;
-            document.getElementById("v5Dynamic").innerText = `${ind.ema21} / ${ind.ema99}`;
-            document.getElementById("v5Fibo").innerText = `${ind.fib618} / ${ind.fib382}`;
-
-            window.currentEntry = data.plan.entry; window.currentSL = data.plan.sl;
-            
-            document.getElementById("v5EntryZone").innerText = `${Math.round(window.currentEntry*0.99)} - ${Math.round(window.currentEntry*1.01)}`;
-            document.getElementById("v5EntryDesc").innerText = ind.entryDesc;
-            document.getElementById("v5Trigger").innerText = ind.entryTrig;
-            document.getElementById("v5Sl").innerText = `${window.currentSL}`;
-            document.getElementById("v5Tp1").innerText = `${data.plan.tp}`;
-            document.getElementById("v5Tp2").innerText = `${data.plan.tp2}`;
-            document.getElementById("v5RR").innerText = `${ind.rrRatio}R`;
-            document.getElementById("v5ExitTrigger").innerText = ind.exitTrig;
-
-            // Handle AI Texts Safely
-            baseAnalysis = (result.ai && result.ai.baseAnalysis) ? result.ai.baseAnalysis : "Analisis AI tidak tersedia untuk saham ini."; 
-            devilAnalysis = (result.ai && result.ai.devilAnalysis) ? result.ai.devilAnalysis : "Analisis Risiko tidak tersedia.";
-            
-            isDevilMode = true; toggleDevilMode(); calculateLots();
-        } catch (error) { 
-            let errText = error.name === 'AbortError' ? "Waktu tunggu habis (Server Google sedang sibuk/antri). Silakan coba lagi." : error.message;
-            alert("Error: " + errText); 
-            tb.style.display = "none"; 
-        } finally {
-            btn.innerText = "⚡ SCAN ULANG"; btn.disabled = false;
-        }
-    }
-
-    function toggleDevilMode() {
-        isDevilMode = !isDevilMode;
-        let btn = document.getElementById('devilBtn'), box = document.getElementById('aiChatConclusion');
-        if(isDevilMode) { 
-            btn.innerText = "🔙 Kembali"; btn.style.background = "rgba(16,185,129,0.15)"; btn.style.color = "var(--buy)"; btn.style.borderColor = "var(--buy)"; 
-            box.style.borderLeftColor = "var(--skip)"; box.innerHTML = devilAnalysis; 
-        } else { 
-            btn.innerText = "🛡️ Risiko"; btn.style.background = "rgba(236,72,153,0.15)"; btn.style.color = "var(--skip)"; btn.style.borderColor = "var(--skip)"; 
-            box.style.borderLeftColor = "var(--neon-purple)"; box.innerHTML = baseAnalysis; 
-        }
-    }
-
-    function setRisk(btnEl) { document.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active')); btnEl.classList.add('active'); currentRiskPercent = parseFloat(btnEl.getAttribute('data-risk')); calculateLots(); }
-    
-    function calculateLots() {
-        let inputVal = document.getElementById("capitalInput").value;
-        if(!inputVal || inputVal.trim() === "") { document.getElementById("calcLot").innerText = "Isi Modal Dulu"; return; }
-        let capital = parseFloat(inputVal);
-        if(isNaN(capital) || window.currentEntry === 0) return;
-        let lossPerShare = window.currentEntry - window.currentSL; 
-        if(lossPerShare <= 0) { document.getElementById("calcLot").innerText = "SL Error"; return; }
-        let maxLots = Math.min(Math.floor((capital * currentRiskPercent) / (lossPerShare * 100)), Math.floor(capital / (window.currentEntry * 100)));
-        if (maxLots <= 0) { document.getElementById("calcLot").innerText = "Modal Kurang"; } 
-        else { document.getElementById("calcLot").innerText = maxLots + " Lot"; }
-    }
-
-    // --- TOP 10 RADAR (Dengan Timeout Stabil) ---
-    async function loadTop10() {
-        try {
-            let res = await fetchWithTimeout(GAS_URL + "?action=getTop10", { timeout: 15000 });
-            let response = await res.json();
-            let html = "";
-            if(response.data && response.data.length > 0) {
-                response.data.forEach(d => { 
-                    html += `<div class="radar-card" onclick="document.getElementById('tickerInput').value='${d.ticker}'; startEngine(); navTo('scannerPage', document.querySelectorAll('.nav-item')[2]);"><div style="display:flex; gap:12px; align-items:center;"><div style="width:45px; height:45px; background:rgba(139,92,246,0.1); color:var(--neon-purple); border-radius:14px; display:flex; align-items:center; justify-content:center; font-weight:800;">${d.ticker.substring(0,2)}</div><div><div style="font-weight:800; font-size:15px; color:#fff;">${d.ticker}</div><div style="font-size:11px; color:var(--text-muted);">${d.setup}</div></div></div><div style="text-align:right;"><div style="font-weight:900; font-size:20px; color:var(--buy);">${d.score}</div></div></div>`; 
-                });
-            } else {
-                html = "<div class='glass-card' style='text-align:center;'>Data radar belum tersedia hari ini.</div>";
-            }
-            document.getElementById('fullWatchlistGrid').innerHTML = html;
-        } catch (e) {
-            document.getElementById('fullWatchlistGrid').innerHTML = "<div class='glass-card' style='text-align:center;'>Gagal memuat Top 10.</div>";
-        }
-    }
-    
-    async function forceUpdateRadar() { 
-        let btn = document.getElementById("btnUpdateRadar");
-        btn.innerText = "🔄 Processing..."; btn.disabled = true;
-        try {
-            let res = await fetchWithTimeout(GAS_URL + "?action=forceRunEOD", { timeout: 30000 });
-            let response = await res.json();
-            alert(response.message); 
-            loadTop10(); 
-        } catch(e) {
-            alert("Update gagal atau timeout.");
-        } finally {
-            btn.innerText = "🔄 Update"; btn.disabled = false;
-        }
-    }
-
-    // --- ASISTEN CHAT AI (Anti-Freeze & Anti-Cache) ---
-    async function sendGeneralChat() {
-        let inputEl = document.getElementById("aiChatInput");
-        let btnEl = document.getElementById("btnSendChat");
-        let text = inputEl.value.trim();
-        let historyBox = document.getElementById("aiChatHistory");
-        
-        if(!text) return;
-        
-        inputEl.disabled = true; btnEl.disabled = true;
-        let hasQuota = await deductUserQuota(); 
-        if(!hasQuota) { 
-            inputEl.disabled = false; btnEl.disabled = false; 
-            return; 
-        }
-
-        historyBox.innerHTML += `<div class="user-msg">${text}</div><div class="bot-msg chat-typing" id="typingMsg">Menganalisa...</div>`;
-        inputEl.value = ""; 
-        historyBox.scrollTop = historyBox.scrollHeight;
-        
-        try {
-            // Tambahan _t= untuk Cache Busting agar request tidak nyangkut, 25 detik timeout
-            let res = await fetchWithTimeout(`${GAS_URL}?action=chat&message=${encodeURIComponent(text)}&_t=${Date.now()}`, { timeout: 25000 });
-            let data = await res.json();
-            
-            document.getElementById("typingMsg").remove(); 
-            historyBox.innerHTML += `<div class="bot-msg">${data.reply || "Maaf, jawaban AI kosong."}</div>`;
-        } catch(e) { 
-            document.getElementById("typingMsg").remove(); 
-            let errText = e.name === 'AbortError' ? "Koneksi ke AI terputus karena server terlalu lama membalas." : "Error jaringan.";
-            historyBox.innerHTML += `<div class="bot-msg" style="color:var(--skip)">${errText}</div>`; 
-        } finally {
-            inputEl.disabled = false; btnEl.disabled = false;
-            inputEl.focus();
-            historyBox.scrollTop = historyBox.scrollHeight;
-        }
-    }
-</script>
+// =====================================================================
+// INIT
+// =====================================================================
+window.addEventListener("load", () => {
+  setTimeout(() => $("splash").classList.add("hide"), 1900);
+  const s = loadSession();
+  if (s && s.token) {
+    session = s;
+    setTimeout(enterApp, 1950);
+  } else {
+    setTimeout(() => $("authView").classList.add("show"), 1950);
+  }
+});
+  </script>
 </body>
 </html>
